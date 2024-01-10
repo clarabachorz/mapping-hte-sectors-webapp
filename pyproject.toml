@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "calc"
+version = "0.1.0"
+description = ""
+authors = ["Philipp Verpoort <philipp.verpoort@pik-potsdam.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+pandas = "^2.1.4"
+piw = {git = "https://github.com/PhilippVerpoort/piw.git"}
+kaleido = "0.2.1"
+numpy = "^1.26.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

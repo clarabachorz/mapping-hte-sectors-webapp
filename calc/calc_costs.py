@@ -1,14 +1,16 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import itertools
 import json
-from analysis.common.tech_class import *
+from calc.tech_class import *
 import re
 import math
 from itertools import compress
 
 def calc_all_LCO(
-    path_to_params="./analysis/common/params.json",
+    path_to_params=str(Path(__file__).parent / 'params.json'),
     get_LCO_comps=False,
     compensate_residual_ems = False,
     ccu_income = False,
