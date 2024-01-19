@@ -72,7 +72,7 @@
         {
             "key": "fossilnaphta",
             "LCO": 518,
-            "co2em": 3.26,
+            "co2em": 3.29,
             "unit": "EUR/t",
             "desc": "fossil naphta"
         },
@@ -92,12 +92,14 @@
         },
         {
             "key": "fossilpci",
+            "LCO": 127.6,
             "co2em": 3.13,
             "unit": "EUR/t",
             "desc": "fossil PCI"
         },
         {
             "key": "fossilccoal",
+            "LCO": 148.2,
             "co2em": 2.84,
             "unit": "EUR/t",
             "desc": "fossil coking coal"
@@ -114,7 +116,7 @@
         },
         {
             "key": "lh2",
-            "othercosts": 60.6,
+            "othercosts": 37.5,
             "elecdemand": 0.35,
             "h2demand": 1,
             "unit": "EUR/MWh",
@@ -189,14 +191,14 @@
         },
         {
             "key": "fossil_plane",
-            "othercosts": 3.2e-2,
+            "othercosts": 3.28e-2,
             "fossilJdemand": 2.47e-4,
             "unit": "EUR/PAX/km",
             "desc": "fossil \n kerosene"
         },
         {
             "key": "comp_plane",
-            "othercosts": 3.2e-2,
+            "othercosts": 3.28e-2,
             "fossilJdemand": 2.47e-4,
             "compensation": true,
             "unit": "EUR/PAX/km",
@@ -204,21 +206,21 @@
         },
         {
             "key": "efuel_plane",
-            "othercosts": 3.2e-2,
+            "othercosts": 3.28e-2,
             "MtJdemand": 2.47e-4,
             "unit": "EUR/PAX/km",
             "desc": "e-kerosene \n(DAC)"
         },
         {
             "key": "ccu_plane",
-            "othercosts": 3.2e-2,
+            "othercosts": 3.28e-2,
             "MtJccudemand": 2.47e-4,
             "unit": "EUR/PAX/km",
             "desc": "e-kerosene \n(PSco2)"
         },
         {
             "key": "h2_plane",
-            "othercosts": 3.46e-2,
+            "othercosts": 3.54e-2,
             "lh2demand": 2.63e-4,
             "unit": "EUR/PAX/km",
             "desc": "LH2"
@@ -228,7 +230,7 @@
             "capex": 88.5,
             "opex": 2.5,
             "lifetime": 30,
-            "wacc": 0.03,
+            "wacc": 0.07,
             "fossilhfodemand": 2.22222,
             "unit": "EUR/MWh",
             "desc": "fossil \ndiesel"
@@ -238,7 +240,7 @@
             "capex": 88.5,
             "opex": 2.5,
             "lifetime": 30,
-            "wacc": 0.03,
+            "wacc": 0.07,
             "fossilhfodemand": 2.22222,
             "compensation": true,
             "unit": "EUR/MWh",
@@ -249,7 +251,7 @@
             "capex": 119.3,
             "opex": 2.5,
             "lifetime": 30,
-            "wacc": 0.07,
+            "wacc": 0.09,
             "ch3ohdemand": 2.22222,
             "unit": "EUR/MWh",
             "desc": "e-methanol \n(DAC)"
@@ -280,7 +282,7 @@
             "capex":889.7,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 336.7,
+            "othercosts": 279.1,
             "elecdemand": 0.4,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
@@ -293,7 +295,7 @@
             "capex":889.7,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 336.7,
+            "othercosts": 279.1,
             "elecdemand": 0.4,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
@@ -307,7 +309,7 @@
             "capex":1146.8,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 393.9,
+            "othercosts": 293.5,
             "elecdemand": 0.62,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
@@ -321,7 +323,7 @@
             "capex":1146.8,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 393.9,
+            "othercosts": 293.5,
             "elecdemand": 0.62,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
@@ -398,7 +400,7 @@
             "flh": 0.9,
             "lifetime":25,
             "wacc":0.08,
-            "othercosts": 36.98,
+            "othercosts": 27.0,
             "elecdemand": 0.131,
             "fossilcoaldemand": 0.9,
             "co2em": 0.563,
@@ -411,7 +413,7 @@
             "flh": 0.9,
             "lifetime":25,
             "wacc":0.08,
-            "othercosts": 36.98,
+            "othercosts": 27.0,
             "elecdemand": 0.131,
             "fossilcoaldemand": 0.9,
             "co2em": 0.563,
@@ -425,7 +427,7 @@
             "flh": 0.9,
             "lifetime":25,
             "wacc":0.08,
-            "othercosts": 58.76,
+            "othercosts": 41.4,
             "elecdemand": 0.174,
             "fossilcoaldemand": 1.51,
             "co2em": 0.548,
@@ -439,7 +441,7 @@
             "flh": 0.9,
             "lifetime":25,
             "wacc":0.08,
-            "othercosts": 58.76,
+            "othercosts": 41.4,
             "elecdemand": 0.174,
             "fossilcoaldemand": 1.51,
             "co2em": 0.548,
