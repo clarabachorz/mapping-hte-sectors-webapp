@@ -22,7 +22,7 @@
         },
         {
             "key": "co2ccu",
-            "LCO": 60,
+            "LCO": 0,
             "co2em": 0.5,
             "elecdemand": 0,
             "desc": "co2 from fossil source"
