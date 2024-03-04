@@ -1,40 +1,50 @@
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import itertools
 import json
-from calc.tech_class import *
+from calc.tech_class import Tech
 import re
 import math
-from itertools import compress
+from pathlib import Path
+
+#define a global variable to store the last read json file data
+last_read_data = None
 
 def calc_all_LCO(
     path_to_params=str(Path(__file__).parent / 'params.json'),
-    get_LCO_comps=False,
-    compensate_residual_ems = False,
-    ccu_income = False,
-    inexistant_techs=[
-        "ccs_plane",
-        "h2_plane",
-        "ccs_ship",
-        "efuel_steel",
-        "ccs_chem",
-        "h2_chem",
-        "efuel_cement",
-        "h2_cement",
-    ],
+    compensate_residual_ems=False,
+    ccu_income=False,
+    inexistant_techs=None,
+    load_json = True,
     **kwargs
 ):
-    user_params = {}
-    tech.common_dict = {}
-    rows_LCO_comps = []
+    global last_read_data
 
-    for key, value in kwargs.items():
-        user_params[key] = value
+    if inexistant_techs is None:
+        inexistant_techs = [
+            "ccs_plane",
+            "h2_plane",
+            "ccs_ship",
+            "efuel_steel",
+            "ccs_chem",
+            "h2_chem",
+            "efuel_cement",
+            "h2_cement",
+        ]
 
-    # JSON FILE HOLDS ALL EXTERNAL ASSUMPTIONS
-    data = json.load(open(path_to_params))
+    user_params = kwargs
+    Tech.COMMON_DICT = {}
+    final_dict = {}
+
+    # json file holds external assumptions, which are then updated by user inputs through kwargs
+    # to make to code faster, it is preferable to not load the json file every time, and instead use the last read data
+    # instead, the user can input their own parameter changes through the kwargs argument
+    if load_json:
+        with open(path_to_params) as f:
+            data = json.load(f)
+            last_read_data = data
+    else:
+        data = last_read_data
 
     # initialise the techs using the assumptions from the json file
     for row in data["techs"]:
@@ -44,24 +54,10 @@ def calc_all_LCO(
             if k.rsplit("_", 1)[0] == row["key"]
         }
         row.update(temp_dict)
-        temp_tech = tech(row, comp = compensate_residual_ems, ccu_income = ccu_income)
+        temp_tech = Tech(row, comp=compensate_residual_ems, ccu_income=ccu_income)
 
-        # to get the individual LCO components
-        if get_LCO_comps:
-            # get the components
-            LCO_comps = temp_tech.LCO_comps
-
-            # #add the key parameters that have been changed relative to default
-            # #NOT USED RIGHT NOW
-            # for key in user_params.keys():
-            #     LCO_comps[key] = user_params[key]
-
-            # append the result to a list
-            rows_LCO_comps.append(LCO_comps)
-
-    # Get the LCOs that have been calculated
-    final_dict = tech.common_dict
-
+        final_dict.update(temp_tech.get_dict())
+    
     ## add an empty entry for technologies that don't exist (inexistant_techs)
     for i in inexistant_techs:
         type = i.split("_")[0]
@@ -70,211 +66,229 @@ def calc_all_LCO(
             type = "h2/nh3"
 
         final_dict[i] = [np.nan, np.nan, np.nan, "no " + type, np.nan, np.nan]
-
+    #function below takes roughly 1/2 or 1/3 of total task time
     df = to_df_fmt(final_dict)
-
+    
     for key in user_params.keys():
         df[key] = user_params[key]
 
-    if get_LCO_comps:
-        return (df, pd.DataFrame(rows_LCO_comps))
     return df
+
+
+def calc_all_LCO_wbreakdown(
+    #path_to_params="./analysis/common/params.json",
+    path_to_params=str(Path(__file__).parent / 'params.json'),
+    compensate_residual_ems=False,
+    ccu_income=False,
+    inexistant_techs=None,
+    load_json = True,
+    **kwargs
+):
+    global last_read_data
+
+    if inexistant_techs is None:
+        inexistant_techs = [
+            "ccs_plane",
+            "h2_plane",
+            "ccs_ship",
+            "efuel_steel",
+            "ccs_chem",
+            "h2_chem",
+            "efuel_cement",
+            "h2_cement",
+        ]
+
+    user_params = kwargs
+    Tech.COMMON_DICT = {}
+    final_dict = {}
+    rows_LCO_comps = []
+
+    # json file holds external assumptions, which are then updated by user inputs through kwargs
+    # to make to code faster, it is preferable to not load the json file every time, and instead use the last read data
+    # instead, the user can input their own parameter changes through the kwargs argument
+    if load_json:
+        with open(path_to_params) as f:
+            data = json.load(f)
+            last_read_data = data
+    else:
+        data = last_read_data
+
+    # initialise the techs using the assumptions from the json file
+    for row in data["techs"]:
+        temp_dict = {
+            k.rsplit("_", 1)[1]: v
+            for k, v in user_params.items()
+            if k.rsplit("_", 1)[0] == row["key"]
+        }
+        row.update(temp_dict)
+        temp_tech = Tech(row, comp=compensate_residual_ems, ccu_income=ccu_income)
+
+        # to get the individual LCO components
+        rows_LCO_comps.append(temp_tech.LCO_comps)
+
+        final_dict.update(temp_tech.get_dict())
+    
+    ## add an empty entry for technologies that don't exist (inexistant_techs)
+    for i in inexistant_techs:
+        type = i.split("_")[0]
+
+        if type == "h2":
+            type = "h2/nh3"
+
+        final_dict[i] = [np.nan, np.nan, np.nan, "no " + type, np.nan, np.nan]
+    #function below takes roughly 1/2 or 1/3 of total task time
+    df = to_df_fmt(final_dict)
+    
+    for key in user_params.keys():
+        df[key] = user_params[key]
+
+    return (df, pd.DataFrame(rows_LCO_comps))
 
 
 def to_df_fmt(dict):
-    rows = []
+    rows = [[key] + value for key, value in dict.items()]
 
-    for key in dict.keys():
-        row = dict[key]
-        row.insert(0, key)
-        rows.append(row)
-
-    df = pd.DataFrame(rows, columns=["tech", "cost", "em", "elec", "code", "co2", "co2_comp"]).round(6)
+    df = pd.DataFrame(
+        rows, columns=["tech", "cost", "em", "elec", "code", "co2", "co2_comp"]
+    ).round(6)
     return df
 
 
-# get multiple LCOs
-def multiple_LCOs(param_dict):
-    params = itertools.product(*param_dict.values())
-
-    list_of_dfs = []
-
-    for idx, param_set in enumerate(params):
-        # calculate set of parameter
-        temp_dict = dict(zip(param_dict.keys(), param_set))
-
-        df = calc_all_LCO(**temp_dict)
-
-        # clean
-        df = df[df["tech"].str.contains("plane|ship|steel|chem|cement")]
-        # df["type"], df["sector"] = df["tech"].str.split("_", 1).str
-        df[["type", "sector"]] = df["tech"].str.split("_", expand=True)
-
-        # calculate fscp
-        df = df.groupby("sector", group_keys=False).apply(lambda x: calc_FSCP(x))
-        list_of_dfs.append(df)
-
-    df = pd.concat(list_of_dfs)
-    return df
-
-
-# calculate error bars on the LCOs
-def calc_uncertainties(**kwargs):
-    param_dict = {}
-
-    for key, value in kwargs.items():
-        param_dict[key] = value
-
-    # get the full dataframe with all the data
-    dfs = multiple_LCOs(param_dict)
-
-    # #calculate statistics
-    dfs = dfs.groupby("tech")["fscp"].describe()
-
-    return dfs
-
-
-def FSCP(green_c, green_em, fossil_c, fossil_em):
+def FSCP(green_cost, green_emission, fossil_cost, fossil_emission):
     with np.errstate(divide="ignore", invalid="ignore"):
-        try:
-            if fossil_em > green_em:
-                return round((green_c - fossil_c) / (fossil_em - green_em),5)
-            # elif green_c < fossil_c:
-            #     # cheaper green technology means the fscp is no longer
-            #     # well defined.
-            #     return np.nan
-            else:
-                # if the emissions of the green tech are higher than that
-                # of the fossil tech, the fscp is not defined
-                return np.nan
-        except:
-            # takes care of divisions by 0 for fscp
-            return np.nan
-
+        result = np.where(fossil_emission > green_emission, 
+                          (green_cost - fossil_cost) / (fossil_emission - green_emission), 
+                          np.nan)
+        return np.round(result, 5)
 
 def calc_FSCP(df):
     # identify the fossil tech row, extract row as dict
-    fossil_dict = df.loc[df["type"] == "fossil"].to_dict("records")[0]
+    fossil_row = df.loc[df["type"] == "fossil"].to_dict("records")[0]
 
     # calculate the FSCP
-    # df = df.reset_index()
-    df["fscp"] = df.apply(
-        lambda x: FSCP(x["cost"], x["em"], fossil_dict["cost"], fossil_dict["em"]),
-        axis=1,
-    )
-    df["elec_fscp"] = df.apply(
-        lambda x: FSCP(x["elec"], x["em"], fossil_dict["elec"], fossil_dict["em"]),
-        axis=1,
-    )
-
-    df["co2_comp"] = df.apply(
-        lambda x: x["co2_comp"]*100 / fossil_dict["em"],
-        axis=1,
-    )
+    df["fscp"] = FSCP(df["cost"], df["em"], fossil_row["cost"], fossil_row["em"])
+    df["elec_fscp"] = FSCP(df["elec"], df["em"], fossil_row["elec"], fossil_row["em"])
+    df["co2_comp"] = df["co2_comp"] * 100 / fossil_row["em"]
 
     return df
 
+#currently only used for python interface. Change in the future
+#duplicate of breakdown_LCO_comps below
 def calc_LCO_breakdown(h2_cost=70, co2_cost=300, co2ts_cost=15):
+    _, LCO_components = calc_all_LCO_wbreakdown(
+        get_LCO_comps=True,
+        h2_LCO=h2_cost,
+        co2_LCO=co2_cost,
+        co2ts_LCO=co2ts_cost,
+    )
+    LCO_components.replace(0.0, np.nan, inplace=True)
 
-    df_total, comps = calc_all_LCO(
-    get_LCO_comps= True,
-    h2_LCO=h2_cost,
-    co2_LCO=co2_cost,
-    co2ts_LCO=co2ts_cost,
-)
-    comps.replace(0.0, np.nan, inplace=True)
+    new_LCO_rows = []
+    LCO_components.apply(process_LCO_rows, axis=1, args=(LCO_components, new_LCO_rows))
+    updated_LCO = update_LCO_components(LCO_components, new_LCO_rows)
 
-    new_rows = []
-    for index, row in comps.iterrows():
-        row_param = row["tech"]
-        #here, filter and select only the fuel rows - ignore ship, steel, etc
+    sectors_LCO, fuel_LCO = split_LCO_df(updated_LCO)
+    return sectors_LCO, fuel_LCO
 
-        if re.search("ship|steel|plane|chem|cement|fossil", row_param):
-            pass
+def breakdown_LCO_comps(LCO_components):
+    #this function takes the LCO components and breaks them down into their subcomponents
+    # eg. for an e-fuel plane flying on e-jet fuel, breaksdown the cost of e-jet fuel
+    # into the cost of the electricity, the cost of the h2, the cost of the co2, etc.
+    LCO_components.replace(0.0, np.nan, inplace=True)
+
+    new_LCO_rows = []
+    LCO_components.apply(process_LCO_rows, axis=1, args=(LCO_components, new_LCO_rows))
+    updated_LCO = update_LCO_components(LCO_components, new_LCO_rows)
+
+    sectors_LCO, fuel_LCO = split_LCO_df(updated_LCO)
+    return sectors_LCO, fuel_LCO
+
+def process_LCO_rows(current_row, LCO_component_rows, new_LCO_rows):
+    # breaks up current row into its components and updates the LCO components
+
+    current_row = current_row.convert_dtypes().dropna()
+    tech_name = current_row["tech"]
+
+    if re.search("ship|steel|plane|chem|cement|fossil", tech_name):
+        # here, filter and select only the fuel rows - ignore ship, steel, etc
+        return
+
+    for _, other_row in LCO_component_rows.iterrows():
+        other_tech_name = other_row["tech"]
+        if current_row.name == other_row.name or math.isnan(
+            other_row.get(tech_name, np.nan)
+        ):
+            # make sure we're not multiplying h2 row by h2 row
+            # and check that tech_name is included in other_row AND is not nan
+            continue
+
+        param_fraction = other_row[tech_name] / current_row["LCO"]
+        # Removes tech,LCO entry and multiply
+        new_row = current_row.drop(["tech", "LCO"]).multiply(param_fraction)
+
+        # obtain list of tech with which rows have already been updated,
+        # see if some of them intersect with the new row
+        # if so, a second update with these results is needed
+        updated_params = [row["tech"] for row in new_LCO_rows]
+        common_subparams = list(set(new_row.keys()).intersection(updated_params))
+
+        for subparam in common_subparams:
+            # update the subparams with the "updated_params"
+            # choose the first row that matches the subparam
+            updated_subparam = next(
+                row for row in new_LCO_rows if row["tech"] == subparam
+            )
+
+            subparam_fraction = new_row[subparam] / updated_subparam["LCO"]
+
+            # Removes tech,LCO entry and clean up
+            new_subrow = updated_subparam.drop(["tech", "LCO"]).multiply(
+                subparam_fraction
+            )
+
+            # rename the new row for clarity
+            new_subrow = new_subrow.add_prefix(subparam + "_")
+            # add results to the row we are working with
+            new_row = pd.concat([new_row, new_subrow])
+
+        new_row = new_row.add_prefix(tech_name + "_")
+        new_row = pd.concat([other_row, new_row])
+
+        if other_tech_name not in updated_params:
+            # check whether the entry already exists in the new rows list.
+            new_LCO_rows.append(new_row)
         else:
-            for index2, row2 in comps.iterrows():
-                row2_param = row2["tech"]
+            for idx, item in enumerate(new_LCO_rows):
+                if other_tech_name == item["tech"]:
+                    new_row = item.combine_first(new_row)
+                    new_LCO_rows[idx] = new_row
 
-                if index == index2:
-                    #here, make sure the h2 row does not multiply the h2 row
-                    pass
-                else:
-                    try:
-                        #check that row_param is included in row2 AND is not nan
-                        if not math.isnan(row2[row_param]):
+def update_LCO_components(old_LCO_components, new_LCO_components):
+    old_LCO_components.set_index("tech", inplace=True)
+    new_LCO_components = (
+        pd.concat(new_LCO_components, axis=1).transpose().set_index("tech")
+    )
+    # merge: updated_LCO now contains all the details we want !
+    updated_LCO_components = new_LCO_components.combine_first(
+        old_LCO_components
+    ).dropna(axis=1, how="all")
+    return updated_LCO_components
 
-                            #list with which rows have already been updates
-                            updated_params = [x["tech"] for x in new_rows]
+def split_LCO_df(LCO_components):
+    # separate the df into sectors and fuel
+    sectors_LCO = (
+        LCO_components[
+            LCO_components.index.str.contains("plane|ship|cement|chem|steel")
+        ]
+        .dropna(axis=1, how="all")
+        .reset_index()
+    )
+    fuel_LCO = (
+        LCO_components[
+            ~LCO_components.index.str.contains("plane|ship|cement|chem|steel")
+        ]
+        .dropna(axis=1, how="all")
+        .reset_index()
+    )
 
-                            #checks that row2 contains the parameter being iterated over
-                            param_fraction = row2[row_param] / row["LCO"]
-
-                            # Removes tech,LCO row and clean up
-                            # the LCO row is already in row2. Redundant info.
-                            new_row = row.drop(["tech","LCO"]).convert_dtypes().dropna()
-                            
-                            new_row = new_row.multiply(param_fraction)
-
-
-                            # In this loop: check that new_row does not contain params that have previously been broken down
-                            # in updated_params. If it does, update new_row
-                            
-                            if not set(new_row.keys()).isdisjoint(updated_params):
-                                
-                                #identify the common element and add more parameters to new_row
-                                common_subparams = list(set(new_row.keys()).intersection(updated_params))
-                            
-                                for subparam in common_subparams:
-                                    #get the updated series corresponding to the subparam we are interested in
-                                    updated_subparam = list(compress(new_rows, [x["tech"] == subparam for x in new_rows]))[0]
-                                    subparam_fraction = new_row[subparam] / updated_subparam["LCO"]
-
-                                    #clean, remove useless columns, convert to correct dtype
-                                    new_subrow = updated_subparam.drop(["tech","LCO"]).convert_dtypes().dropna()
-                                    
-                                    # scale the row usiing the subparam fraction
-                                    new_subrow = new_subrow.multiply(subparam_fraction)
-                                    
-                                    # rename the new rows for clariy
-                                    new_subrow = new_subrow.add_prefix(subparam + "_")
-                                    
-                                    # add the results to the row we are working with
-                                    new_row = pd.concat([new_row, new_subrow])
-                                    
-
-                            else:
-                                pass
-                            new_row = new_row.add_prefix(row_param + "_")
-                            new_row = pd.concat([row2, new_row])
-
-                            
-                            #here, we add a loop which check whether the entry already exists in the new rows list. If so, update it.
-                            if row2_param not in updated_params:
-                                new_rows.append(new_row)
-                            else:
-                                for idx, item in enumerate(new_rows):
-                                    if row2_param == item["tech"]:
-                                        
-                                        #here, item and new row have to be updated and combined
-                                        new_row = item.combine_first(new_row)
-                                        new_rows[idx] = new_row
-                        else:
-                            pass
-                            
-                    except:
-                        pass
-
-    new_LCO_comps = pd.concat(new_rows, axis = 1).transpose().set_index("tech")
-    comps.set_index("tech", inplace=True)
-
-    #merge: updated_LCO now contains all the details we want !
-    updated_LCO = new_LCO_comps.combine_first(comps).dropna(axis=1, how='all')
-
-    sectors_LCO = updated_LCO.filter(regex=r'(plane|ship|cement|chem|steel)', axis = 0).reset_index()
-
-    df_all = updated_LCO.reset_index().merge(sectors_LCO.drop_duplicates(), on=None, 
-                    how='left', indicator=True)
-
-    fuel_LCO = df_all[df_all["_merge"] == "left_only"].drop("_merge", axis = 1).dropna(axis=1, how='all').set_index("tech")
-
-    return(sectors_LCO)
+    return sectors_LCO, fuel_LCO
