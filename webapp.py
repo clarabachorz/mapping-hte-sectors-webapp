@@ -10,6 +10,7 @@ from src.load import define_inputs
 from src.plots.StackedBarPlot import StackedBarPlot
 from src.proc import process_inputs
 from src.update import update_inputs
+from src.utils import load_yaml_config_file
 
 
 # metadata
@@ -78,6 +79,7 @@ webapp = Webapp(
     update=[update_inputs],
     proc=[process_inputs],
     plots=[StackedBarPlot],
+    glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,
     input_caching=False,

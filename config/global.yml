@@ -1,0 +1,101 @@
+sector:
+  plane: 
+    label: Aviation
+    unit: EUR/PAX/km
+  ship:
+    label: Maritime transport
+    unit: EUR/MWh
+  steel: 
+    label: Primary steel
+    unit: EUR/t
+  chem: 
+    label: Chemical feedstocks
+    unit: EUR/t
+  cement: 
+    label: Cement
+    unit: EUR/t
+
+cost_types:
+  capex:
+    label: Annualised CAPEX
+    colour: '#bde0fe'
+  opex:
+    label: OPEX(fixed)
+    colour: '#bde0fe'
+  other costs:
+    label: Other CAPEX or OPEX
+    colour: '#bde0fe'
+  h2:
+    label: Green H<sub>2</sub>
+    colour: '#FCE762'
+  nh3:
+    label: Green NH<sub>3</sub>
+    colour: '#FCE762'
+  lh2:
+    label: Liquified green H<sub>2</sub>
+    colour: '#FCE762'
+  co2 tax:
+    label: CO<sub>2</sub> tax
+    colour: '#aaaaaa'
+  elec:
+    label: Electricity
+    colour: '#e6af2e'
+  heat:
+    label: Low temperature heat
+    colour: '#7c1f8a'
+  co2:
+    label: CO<sub>2</sub> (DAC)
+    colour: '#23CE6B'
+  co2ccu:
+    label: CO<sub>2</sub> (from an<br>industrial point source)
+    colour: '#8E9AAF'
+  ch3oh:
+    label: E-methanol
+    colour: '#FEB380'
+  ch3ohccu:
+    label: Syn-methanol (CCU-based)
+    colour: '#8E9AAF'
+  MtJ:
+    label: E-jet fuel (methanol route)
+    colour: '#FEB380'
+  MtJccu:
+    label: Syn-jet fuel (CCU-methanol-based)
+    colour: '#8E9AAF'
+  fossilJ:
+    label: Fossil jet fuel
+    colour: '#31393C'
+  fossilccoal:
+    label: Fossil coking coal
+    colour: '#31393C'
+  fossilpci:
+    label: Fossil PCI coal
+    colour: '#31393C'
+  fossilng:
+    label: Fossil natural gas
+    colour: '#31393C'
+  fossilnaphta:
+    label: Fossil naphtha
+    colour: '#31393C'
+  fossilcoal:
+    label: Fossil bituminous coal
+    colour: '#31393C'
+  fossilhfo:
+    label: Fossil heavy fuel oil
+    colour: '#31393C'
+  co2 transport and storage:
+    label: CO<sub>2</sub> transport and storage
+    colour: '#3083DC'
+
+components:
+  alloys: Alloys
+  dri: DRI
+  graphite: Graphite
+  labour: Labour
+  lime: Lime
+  natural gas: Natural gas
+  electricity: Electricity
+  hydrogen: Hydrogen
+  onm: Operation and Maintenance
+  ore: Iron ore
+  scrap: Steel scrap
+  steel: Steel
