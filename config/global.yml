@@ -1,19 +1,19 @@
 sector:
   plane: 
     label: Aviation
-    unit: EUR/PAX/km
+    unit: cEUR/PAX/km
   ship:
     label: Maritime transport
     unit: EUR/MWh
   steel: 
     label: Primary steel
-    unit: EUR/t
+    unit: EUR/t<sub>hot rolled coil</sub>
   chem: 
     label: Chemical feedstocks
-    unit: EUR/t
+    unit: EUR/t<sub>olefin</sub>
   cement: 
     label: Cement
-    unit: EUR/t
+    unit: EUR/t<sub>clinker</sub>
 
 cost_types:
   capex:
@@ -25,42 +25,6 @@ cost_types:
   other costs:
     label: Other CAPEX or OPEX
     colour: '#bde0fe'
-  h2:
-    label: Green H<sub>2</sub>
-    colour: '#FCE762'
-  nh3:
-    label: Green NH<sub>3</sub>
-    colour: '#FCE762'
-  lh2:
-    label: Liquified green H<sub>2</sub>
-    colour: '#FCE762'
-  co2 tax:
-    label: CO<sub>2</sub> tax
-    colour: '#aaaaaa'
-  elec:
-    label: Electricity
-    colour: '#e6af2e'
-  heat:
-    label: Low temperature heat
-    colour: '#7c1f8a'
-  co2:
-    label: CO<sub>2</sub> (DAC)
-    colour: '#23CE6B'
-  co2ccu:
-    label: CO<sub>2</sub> (from an<br>industrial point source)
-    colour: '#8E9AAF'
-  ch3oh:
-    label: E-methanol
-    colour: '#FEB380'
-  ch3ohccu:
-    label: Syn-methanol (CCU-based)
-    colour: '#8E9AAF'
-  MtJ:
-    label: E-jet fuel (methanol route)
-    colour: '#FEB380'
-  MtJccu:
-    label: Syn-jet fuel (CCU-methanol-based)
-    colour: '#8E9AAF'
   fossilJ:
     label: Fossil jet fuel
     colour: '#31393C'
@@ -82,20 +46,78 @@ cost_types:
   fossilhfo:
     label: Fossil heavy fuel oil
     colour: '#31393C'
+  elec:
+    label: Electricity
+    colour: '#e6af2e'
+  heat:
+    label: Low temperature heat
+    colour: '#7c1f8a'
+  h2:
+    label: Green H<sub>2</sub>
+    colour: '#FCE762'
+  nh3:
+    label: Green NH<sub>3</sub>
+    colour: '#FCE762'
+  lh2:
+    label: Liquified green H<sub>2</sub>
+    colour: '#FCE762'
+  co2 tax:
+    label: CO<sub>2</sub> tax
+    colour: '#aaaaaa'
+  co2:
+    label: CO<sub>2</sub> (DAC)
+    colour: '#23CE6B'
+  co2ccu:
+    label: CO<sub>2</sub> (from a<br> fossil industrial point source)
+    colour: '#8E9AAF'
+  ch3oh:
+    label: E-methanol
+    colour: '#FEB380'
+  ch3ohccu:
+    label: Syn-methanol (using fossil CO<sub>2</sub> from CCU)
+    colour: '#8E9AAF'
+  MtJ:
+    label: E-jet fuel (methanol route)
+    colour: '#FEB380'
+  MtJccu:
+    label: Syn-jet fuel (methanol route, using fossil CO<sub>2</sub> from CCU)
+    colour: '#8E9AAF'
   co2 transport and storage:
     label: CO<sub>2</sub> transport and storage
     colour: '#3083DC'
+  cost:
+    label: Cost (source available from paper supplementary)
+    colour: '#31393C'
+  NA:
+    label: None
+    colour: '#bde0fe'
 
-components:
-  alloys: Alloys
-  dri: DRI
-  graphite: Graphite
-  labour: Labour
-  lime: Lime
-  natural gas: Natural gas
-  electricity: Electricity
-  hydrogen: Hydrogen
-  onm: Operation and Maintenance
-  ore: Iron ore
-  scrap: Steel scrap
-  steel: Steel
+
+fossils:
+  fossilcoal:
+    label: Bituminous coal
+    unit: EUR/MWh
+  fossilccoal:
+    label: Coking coal
+    unit: EUR/t
+  fossilpci:
+    label: PCI coal
+    unit: EUR/t
+  fossilng:
+    label: Natural gas
+    unit: EUR/MWh
+  fossilnaphta:
+    label: Naphtha
+    unit: EUR/t
+  fossilhfo:
+    label: Heavy fuel oil
+    unit: EUR/MWh
+  fossilJ:
+    label: Jet fuel
+    unit: EUR/MWh
+  fossildiesel:
+    label: Diesel
+    unit: EUR/MWh
+  fossilch3oh:
+    label: Methanol
+    unit: EUR/MWh

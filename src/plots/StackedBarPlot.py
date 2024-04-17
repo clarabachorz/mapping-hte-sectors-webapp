@@ -40,7 +40,7 @@ class StackedBarPlot(BasePlot):
         #     yaxis_title=self.cfg['yaxis_title'],
         # )
 
-        return {'fig1': fig}
+        return {'fig2': fig}
     
     def _prepare(self, df: pd.DataFrame, sector: str) -> pd.DataFrame:
 
@@ -61,6 +61,13 @@ class StackedBarPlot(BasePlot):
                 for var, display in self._glob_cfg['cost_types'].items()
             })
             df_plot['unit'] = self._glob_cfg['sector'][sector]['unit']
+        
+        #set bar custom order according to global config
+        order = self._glob_cfg['cost_types'].keys()
+        df_plot['variable'] = df_plot['variable'].astype('category')
+        df_plot['variable'] = df_plot['variable'].cat.set_categories(order, ordered=True)
+        df_plot = df_plot.sort_values(['variable'])
+
         return df_plot
 
     def _add_bars(self, fig, i, sector, df_plot):
@@ -69,7 +76,7 @@ class StackedBarPlot(BasePlot):
         hovercols = ['tech_name', 'hover_ptype', 'value', 'unit'] if hover else None
         hovercomp = {
             'header_basic': '<b>%{customdata[0]}</b><br>',
-            'var_type':'<b>%{customdata[1]}</b><br>',
+            'var_type':'Component: %{customdata[1]}<br>',
             'cost':'Cost: %{customdata[2]:.2f} %{customdata[3]}'
         }
         hovertemplate = ''.join(hovercomp[c] for c in ['header_basic', 'var_type', 'cost'])

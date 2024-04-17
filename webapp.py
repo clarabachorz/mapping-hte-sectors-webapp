@@ -8,6 +8,7 @@ from dash import html
 from src.ctrls import main_ctrl, input_fields
 from src.load import define_inputs
 from src.plots.StackedBarPlot import StackedBarPlot
+from src.plots.FuelStackedBarPlot import FuelStackedBarPlot
 from src.proc import process_inputs
 from src.update import update_inputs
 from src.utils import load_yaml_config_file
@@ -15,7 +16,7 @@ from src.utils import load_yaml_config_file
 
 # metadata
 metadata = {
-    'title': 'Hard-to-electrifiy sectors',
+    'title': 'Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors',
     'abstract': 'Calculating the technoeconomics for the hard-to-electrify sectors (aviation, maritime transport, '
                 'cement, primary steel and chemical feedstocks).',
     'about': html.Div([
@@ -46,15 +47,20 @@ metadata = {
             'orcid': '0000-0001-5585-030X',
             'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
         },
+        {
+            'first': 'Gunnar',
+            'last': 'Luderer',
+            'orcid': '0000-0002-9057-6155',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
     ],
     'date': '2023-01-09',
     'version': 'v0.1.0',
     'doi': 'TBD',
     'licence': {'name': 'CC BY 4.0', 'link': 'https://creativecommons.org/licenses/by/4.0/'},
-    'citeas': 'Bachorz, Clara; Verpoort, Philipp C.; Ueckerdt, Falko (2023): Interactive webapp for techno-economic '
-              'analysis of the abatement of hard-to-electrify sectors. V. 0.1.0. GFZ Data Services. '
+    'citeas': 'Bachorz, Clara; Verpoort, Philipp C.; Ueckerdt, Falko (2023): Interactive webapp for exploring techno-economic landscapes of abatement options for hard-to-electrify sectors. V. 0.1.0. GFZ Data Services. '
               'https://doi.org/TBD',
-    'reference_citeas': 'Bachorz et al., Mapping the technoeconomic landscape for the hard-to-electrify sectors '
+    'reference_citeas': 'Bachorz et al., Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors'
                         '(2024). Working paper in preparation.',
     #'reference_doi': 'TBC',
 }
@@ -78,7 +84,7 @@ webapp = Webapp(
     ],
     update=[update_inputs],
     proc=[process_inputs],
-    plots=[StackedBarPlot],
+    plots=[FuelStackedBarPlot, StackedBarPlot],
     glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,

@@ -1,9 +1,9 @@
 figures:
-  fig1:
-    name: Fig. 1
-    title: Sectoral stacked bar plot.
+  fig2:
+    name: Fig. 2
+    title: Levelized cost breakdown for the HTE sectors.
     desc:
-      'Sectoral levelized cost components for the 5 HTE sectors.'
+      'Sectoral levelized cost components for the five HTE sectors.'
     display:
     - ''
     - 'advanced'

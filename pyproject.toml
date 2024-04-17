@@ -11,6 +11,7 @@ pandas = "^2.1.4"
 piw = {git = "https://github.com/PhilippVerpoort/piw.git"}
 kaleido = "0.2.1"
 numpy = "^1.26.3"
+matplotlib = "^3.8.3"
 
 
 [build-system]
