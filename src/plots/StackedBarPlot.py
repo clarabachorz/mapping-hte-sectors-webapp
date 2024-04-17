@@ -33,7 +33,7 @@ class StackedBarPlot(BasePlot):
             self._add_bars(fig, i, sector, df_plot)
             # fig.add_trace(go.Bar(x=df_plot['tech'], y=df_plot['value'], name=df_plot['variable']), row=1, col=i+1)#, marker_color = df_plot['variable']
             
-
+        fig.update_xaxes(tickfont=dict(size=8))
         fig.update_layout(
         barmode='stack',
         yaxis_title=self.cfg['yaxis_title'],
