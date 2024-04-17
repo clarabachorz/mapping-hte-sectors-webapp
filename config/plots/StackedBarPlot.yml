@@ -13,7 +13,7 @@ figures:
         height: 80.0  # unit mm
       webapp:
         width: 100.0  # unit %
-        height: 600.0  # unit px
+        height: 800.0  # unit px
 config:
   xaxis_title: Technologies
   yaxis_title: Cost components

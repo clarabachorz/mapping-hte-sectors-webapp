@@ -22,9 +22,9 @@ class StackedBarPlot(BasePlot):
         df[["type", "sector"]] = df["tech"].str.split("_", expand=True)
         df = df.drop(df[df['tech']=='h2_plane'].index)
         
-
+        subplot_titles = [self._glob_cfg['sector'][sector]['label'] for sector in self.sectors]
         fig = make_subplots(rows=1, cols=5, 
-                            subplot_titles=self.sectors)
+                            subplot_titles=subplot_titles)
 
         for i,sector in enumerate(self.sectors):
             df_plot = self._prepare(df, sector)
@@ -34,11 +34,18 @@ class StackedBarPlot(BasePlot):
             # fig.add_trace(go.Bar(x=df_plot['tech'], y=df_plot['value'], name=df_plot['variable']), row=1, col=i+1)#, marker_color = df_plot['variable']
             
 
-        # # some styling
-        # fig.update_layout(
-        #     xaxis_title=self.cfg['xaxis_title'],
-        #     yaxis_title=self.cfg['yaxis_title'],
-        # )
+        fig.update_layout(
+        barmode='stack',
+        yaxis_title=self.cfg['yaxis_title'],
+        legend_title='',
+        legend=dict(
+            yanchor="bottom",
+            y=1.15,  # puts legend below the plot
+            xanchor="center",
+            x=0.5,
+            orientation="h"  # makes the legend horizontal
+        )
+        )
 
         return {'fig2': fig}
     
@@ -84,18 +91,34 @@ class StackedBarPlot(BasePlot):
         hovertemplate = (
             None if not hover else hovertemplate
         )
-
-        fig.add_trace(
+        for variable in df_plot['variable'].unique():
+            df_variable = df_plot[df_plot['variable'] == variable]
+            fig.add_trace(
             go.Bar(
-                x=df_plot['tech_name'], 
-                y=df_plot['value'], 
-                marker_color = df_plot['display_color'],
-                name=sector,
+                x=df_variable['tech_name'], 
+                y=df_variable['value'], 
+                marker_color = df_variable['display_color'],
+                name=self._glob_cfg['cost_types'][variable]['label'],
+                legendgroup=df_variable['display_color'].iloc[0],
                 showlegend=not i,
                 hoverinfo='text' if hover else 'skip',
                 hovertemplate=hovertemplate,
-                customdata=df_plot[hovercols] if hover else None,
+                customdata=df_variable[hovercols] if hover else None,
                 ),
             row=1, 
             col=i+1
-            )#, marker_color = df_plot['variable']
+            )
+        # fig.add_trace(
+        #     go.Bar(
+        #         x=df_plot['tech_name'], 
+        #         y=df_plot['value'], 
+        #         marker_color = df_plot['display_color'],
+        #         name=sector,
+        #         showlegend=not i,
+        #         hoverinfo='text' if hover else 'skip',
+        #         hovertemplate=hovertemplate,
+        #         customdata=df_plot[hovercols] if hover else None,
+        #         ),
+        #     row=1, 
+        #     col=i+1
+        #     )#, marker_color = df_plot['variable']

@@ -109,6 +109,25 @@ class FuelStackedBarPlot(BasePlot):
         hovertemplate = (
             None if not hover else hovertemplate
         )
+
+        # Define your custom legend labels
+        legend_labels = {
+            'ch3ohccu': 'Fossil CCU based methanol',
+            'ch3oh': 'DAC-based methanol',
+            'co2': 'CO<sub>2</sub> from DAC',
+            'h2': 'Green H<sub>2</sub>',
+            'heat': 'Heat',
+            'elec': 'Electricity',
+            'other costs': 'CAPEX and fixed OPEX',
+            'capex': 'CAPEX',
+            'opex': 'Fixed OPEX',
+            'cost': 'Fossil fuel cost',
+        }
+
+        # Some variables have to be grouped together
+        grouped_variables = ['capex', 'opex', 'other costs']
+
+        #plot the bars for each variable
         for variable in df_plot['variable'].unique():
             df_variable = df_plot[df_plot['variable'] == variable]
             fig.add_trace(
@@ -116,7 +135,7 @@ class FuelStackedBarPlot(BasePlot):
                     x=df_variable['tech_name'], 
                     y=df_variable['value'], 
                     marker_color=df_variable['display_color'],
-                    name=variable,  # label each bar with its corresponding variable
+                    name=legend_labels.get(variable, variable),
                     hoverinfo='text' if hover else 'skip',
                     hovertemplate=hovertemplate,
                     customdata=df_variable[hovercols] if hover else None,
