@@ -128,7 +128,7 @@
         },
         {
             "key": "nh3",
-            "capex": 148.4,
+            "capex": 161.0,
             "opex": 4,
             "lifetime": 25,
             "elecdemand ": 0.089,
@@ -142,7 +142,6 @@
             "opex": 4,
             "lifetime": 25,
             "elecdemand ": 0.067,
-            "heatdemand ": 0.086,
             "h2demand ": 1.23,
             "co2demand ": 0.27,
             "unit": "EUR/MWh",
