@@ -179,7 +179,7 @@ class Tech:
 
 #make into property ? and change the name to eff_elec ?
     def get_eff_elec(self):
-        """Calculates the effective electricity demand of the technology, taking into account the compensation flag.
+        """ DEPRECIATED. Calculates the effective electricity demand of the technology, taking into account the compensation flag.
         If compensation is on, the effective electricity demand is the sum of the tech electricity demand and DAC electricity demand,
         calculated using total emissions * electricity demand to compensate a ton of CO2"""
         if getattr(self, "compensation", False):
@@ -254,7 +254,7 @@ class Tech:
 
     def get_comp_cost(self) -> float:
         """Returns the cost of compensating for CO2 emissions for the tech, or 0 if not defined.
-        The cost is the sum of DAC (CO2 capture) and CO2 transport and storage costs."""
+        The cost is the sum of non-fossil CO2 (CO2 capture) and CO2 transport and storage costs."""
         if getattr(self, "compensation", False):
             self.LCO_comps["co2"] = self.get_total_em() * getattr(self.COMMON_DICT["co2"], "LCO", 0)
             self.LCO_comps["co2 transport and storage"] = self.get_total_em() * getattr(self.COMMON_DICT["co2ts"], "LCO", 0)
@@ -293,7 +293,7 @@ class Tech:
             return 0
 
     def get_co2dem(self) -> float:
-        """Returns the DAC demand, in tCO2/unit of the tech, or 0 if not defined."""
+        """Returns the non-fossil CO2 demand, in tCO2/unit of the tech, or 0 if not defined."""
         return self.feedstock_demand.get("co2", 0)
     
     def get_feedstock_cost(self, key) -> float:

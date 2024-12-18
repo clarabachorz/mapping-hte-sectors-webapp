@@ -9,6 +9,7 @@ from src.ctrls import main_ctrl, input_fields
 from src.load import define_inputs
 from src.plots.StackedBarPlot import StackedBarPlot
 from src.plots.FuelStackedBarPlot import FuelStackedBarPlot
+from src.plots.HeatMapPlot import HeatMapPlot
 from src.proc import process_inputs
 from src.update import update_inputs
 from src.utils import load_yaml_config_file
@@ -20,11 +21,11 @@ metadata = {
     'abstract': 'Calculating the technoeconomics for the hard-to-electrify sectors (aviation, maritime transport, '
                 'cement, primary steel and chemical feedstocks).',
     'about': html.Div([
-        html.P('This interactive webapp can be used to inspect data from an accompanying article by the same '
-               'authors that studies decarbonisation options of hard-to-electrifiy sectors. Some of the key '
-               'assumptions (cost of hydrogen and cost of DAC) can be changed here when producing the stacked-bar '
+        html.P('This interactive webapp can be used to inspect data and reproduce selected key figures from an accompanying article '
+               ' by the same authors that studies decarbonisation options of hard-to-electrifiy sectors. Some of the key '
+               'assumptions (cost of low-emission hydrogen and cost of non-fossil CO2) can be changed here when producing the stacked-bar '
                'plots.'),
-        html.P('Some more explanations on what this work does and how it can be used...'),
+        html.P(''),
         html.P('For more advanced changes and detailed information on the input data and methodology, we encourage '
                'users to inspect the article, its supplement, and the source code written in Python.'),
     ]),
@@ -42,15 +43,15 @@ metadata = {
             'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
         },
         {
-            'first': 'Falko',
-            'last': 'Ueckerdt',
-            'orcid': '0000-0001-5585-030X',
-            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
-        },
-        {
             'first': 'Gunnar',
             'last': 'Luderer',
             'orcid': '0000-0002-9057-6155',
+            'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
+        },
+                {
+            'first': 'Falko',
+            'last': 'Ueckerdt',
+            'orcid': '0000-0001-5585-030X',
             'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
         },
     ],
@@ -84,7 +85,7 @@ webapp = Webapp(
     ],
     update=[update_inputs],
     proc=[process_inputs],
-    plots=[FuelStackedBarPlot, StackedBarPlot],
+    plots=[FuelStackedBarPlot, StackedBarPlot, HeatMapPlot],
     glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,

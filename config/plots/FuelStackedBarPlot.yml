@@ -4,7 +4,7 @@ figures:
     title: Levelized cost breakdown for the fuels considered in this work.
     desc:
       Fuel levelized cost components obtained from the techno-economic analysis. Figure 1-a) shows the reference fossil fuel costs used.
-      Figure 1-b) shows the cost of the synfuels considered in this work (both DAC based and CCU based).
+      Figure 1-b) shows the cost of the synfuels considered in this work (both e-fuels and CCU-based synfuels).
     display:
     - ''
     - 'advanced'

@@ -46,6 +46,12 @@ cost_types:
   fossilhfo:
     label: Fossil heavy fuel oil
     colour: '#31393C'
+  ironore:
+    label: Iron ore
+    colour: '#31393C'
+  scrap:
+    label: Scrap
+    colour: '#31393C'
   elec:
     label: Electricity
     colour: '#e6af2e'
@@ -65,7 +71,7 @@ cost_types:
     label: CO<sub>2</sub> tax
     colour: '#aaaaaa'
   co2:
-    label: CO<sub>2</sub> (DAC)
+    label: CO<sub>2</sub> (non-fossil)
     colour: '#23CE6B'
   co2ccu:
     label: CO<sub>2</sub> (from a<br> fossil industrial point source)

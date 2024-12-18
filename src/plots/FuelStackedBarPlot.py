@@ -18,16 +18,23 @@ class FuelStackedBarPlot(BasePlot):
         nan_counts = df_fuels.isna().sum(axis=1)
 
         # Filter rows according to number of NaNs
-        df_fuels_with_nans = df_fuels[nan_counts >= 22]
+        #df_fuels_with_nans = df_fuels[nan_counts >= 22]
+        
         # Filter rows where 'tech' column contains 'fossil'
-        df_fuels_fossils = df_fuels_with_nans[df_fuels_with_nans['tech'].str.contains('fossil')]
+        df_fuels_fossils = df_fuels[df_fuels['tech'].str.contains('fossil')]
         df_fuels_fossils = df_fuels_fossils.dropna(axis = 1, how = 'all')
         df_fuels_fossils['cost'] = df_fuels_fossils['LCO']
-        #other synfuels
-        df_fuels_synfuels = df_fuels[nan_counts < 22]
+        
+        #rows that are not fossils
+        df_fuels_nofossils = df_fuels[~df_fuels['tech'].str.contains('fossil')]
+        #isolate the synfuels (that have more than 2 columns with data - the basic 2 columns are tech name and LCO)
+        grouped = df_fuels_nofossils.groupby('tech')
+        df_fuels_synfuels = grouped.filter(lambda x: (x.notna().sum(axis=1) > 2).any())
+
         #need to drop the ch3oh and heat "total cost" columns, as we double count otherwise
         #df_fuels_synfuels.drop(columns=['ch3oh', 'ch3ohccu', 'heat'], inplace=True)
-        df_fuels_synfuels = df_fuels_synfuels.drop(columns=['ch3oh', 'ch3ohccu', 'heat', 'ch3oh_heat', 'ch3ohccu_heat']).sort_values(['LCO'])
+
+        df_fuels_synfuels = df_fuels_synfuels.drop(columns=['ch3oh', 'ch3ohccu']).sort_values(['LCO'])
 
 
         fig = make_subplots(rows=1, cols=2)
@@ -112,11 +119,11 @@ class FuelStackedBarPlot(BasePlot):
 
         # Define your custom legend labels
         legend_labels = {
-            'ch3ohccu': 'Fossil CCU based methanol',
-            'ch3oh': 'DAC-based methanol',
-            'co2': 'CO<sub>2</sub> from DAC',
-            'h2': 'Green H<sub>2</sub>',
-            'heat': 'Heat',
+            'ch3ohccu': 'Fossil CCU-based methanol',
+            'ch3oh': 'E-methanol',
+            'co2': 'Non-fossil CO<sub>2</sub>',
+            'h2': 'Low-emission H<sub>2</sub>',
+            #'heat': 'Heat',
             'elec': 'Electricity',
             'other costs': 'CAPEX and fixed OPEX',
             'capex': 'CAPEX',

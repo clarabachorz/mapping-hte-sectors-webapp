@@ -34,7 +34,7 @@
             "elecdemand": 0,
             "desc": "co2 transport and storage"
         },
-        {
+                {
             "key": "fossilJ",
             "LCO": 51.94,
             "co2em": 0.32,
@@ -98,6 +98,21 @@
             "desc": "fossil coking coal"
         },
         {
+            "key": "ironore",
+            "LCO": 100,
+            "co2em": 0,
+            "unit": "EUR/t",
+            "desc": "Iron ore"
+        },
+        {  
+            "key":"scrap",
+            "LCO": 180,
+            "co2em": 0,
+            "unit": "EUR/t",
+            "desc": "Scrap and ferroalloys"
+
+        },
+        {
             "key": "h2",
             "capex": 121,
             "opex": 2,
@@ -107,7 +122,7 @@
             "unit": "EUR/MWh",
             "desc": "h2 using electrolysis"
         },
-        {
+                {
             "key": "lh2",
             "othercosts": 37.5,
             "elecdemand": 0.35,
@@ -136,7 +151,7 @@
             "unit": "EUR/MWh",
             "desc": "ammonia using an asu"
         },
-        {
+                {
             "key": "ch3oh",
             "capex": 79.9,
             "opex": 4,
@@ -145,7 +160,7 @@
             "h2demand ": 1.23,
             "co2demand ": 0.27,
             "unit": "EUR/MWh",
-            "desc": "power-to-methanol using dac"
+            "desc": "power-to-methanol using non-fossil CO2"
         },
         {
             "key": "ch3ohccu",
@@ -153,7 +168,6 @@
             "opex": 4,
             "lifetime": 25,
             "elecdemand ": 0.067,
-            "heatdemand ": 0.086,
             "h2demand ": 1.23,
             "co2ccudemand ": 0.27,
             "unit": "EUR/MWh",
@@ -166,9 +180,10 @@
             "lifetime": 25,
             "elecdemand ": 0.016,
             "h2demand ": 0.024,
+            "co2demand": 0.037,
             "ch3ohdemand ": 1.048,
             "unit": "EUR/MWh",
-            "desc": "power-to-jetfuel using dac"
+            "desc": "power-to-jetfuel using non-fossil CO2"
         },
         {
             "key": "MtJccu",
@@ -194,14 +209,14 @@
             "fossilJdemand": 2.47e-4,
             "compensation": true,
             "unit": "EUR/PAX/km",
-            "desc": "Fossil kerosene aircraft<br>+ DACCS compensation"
+            "desc": "Fossil kerosene aircraft<br>+ CDR compensation"
         },
         {
             "key": "efuel_plane",
             "othercosts": 3.28e-2,
             "MtJdemand": 2.47e-4,
             "unit": "EUR/PAX/km",
-            "desc": "E-kerosene aircraft (DAC-based)"
+            "desc": "E-kerosene aircraft<br>(non-fossil CO2-based)"
         },
         {
             "key": "ccu_plane",
@@ -236,7 +251,7 @@
             "fossilhfodemand": 2.22222,
             "compensation": true,
             "unit": "EUR/MWh",
-            "desc": "Fossil diesel ICE + DACCS compensation"
+            "desc": "Fossil diesel ICE<br>+ CDR compensation"
         },
         {
             "key": "efuel_ship",
@@ -246,7 +261,7 @@
             "wacc": 0.09,
             "ch3ohdemand": 2.22222,
             "unit": "EUR/MWh",
-            "desc": "E-methanol ICE (DAC-based)"
+            "desc": "E-methanol ICE<br>(non-fossil CO2-based)"
         },
         {
             "key": "ccu_ship",
@@ -267,75 +282,86 @@
             "h2demand": 0.67, 
             "nh3demand": 1.56,
             "unit": "EUR/MWh",
-            "desc": "Green ammonia ICE"
+            "desc": "Low-emission ammonia ICE"
         },
         {
             "key": "fossil_steel",
-            "capex":889.7,
+            "capex":684.4,
+            "opex": 4.1,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 279.1,
-            "elecdemand": 0.4,
+            "othercosts": 70.9,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
-            "fossilngdemand":0.24,
+            "fossilngdemand":0.21,
+            "ironoredemand":1.58,
+            "scrapdemand":0.17,
             "unit": "EUR/t",
             "desc": "Blast furnace +<br>basic oxygen furnace (BF-BOF)"
         },
         {
             "key": "comp_steel",
-            "capex":889.7,
+            "capex":684.4,
+            "opex": 4.1,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 279.1,
-            "elecdemand": 0.4,
+            "othercosts": 70.9,
             "fossilccoaldemand":0.524,
             "fossilpcidemand":0.151,
-            "fossilngdemand":0.24,
+            "fossilngdemand":0.21,
+            "ironoredemand":1.58,
+            "scrapdemand":0.17,
             "compensation": true,
             "unit": "EUR/t",
-            "desc": "BF-BOF + DACCS compensation"
+            "desc": "BF-BOF + CDR compensation"
         },
         {
             "key": "ccs_steel",
-            "capex":1146.8,
+            "capex":880.6,
+            "opex": 3.8,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 293.5,
-            "elecdemand": 0.62,
-            "fossilccoaldemand":0.524,
+            "othercosts": 78.1,
+            "fossilccoaldemand":0.464,
             "fossilpcidemand":0.151,
-            "fossilngdemand":1.53,
-            "co2capt": 1.53,
+            "fossilngdemand":1.06,
+            "ironoredemand":1.58,
+            "scrapdemand":0.17,
+            "co2capt": 1.24,
             "unit": "EUR/t",
             "desc": "BF-BOF + CCS"
         },
         {
             "key": "ccu_steel",
-            "capex":1146.8,
+            "capex":880.6,
+            "opex": 3.8,
             "wacc":0.1,
             "lifetime":25,
-            "othercosts": 293.5,
-            "elecdemand": 0.62,
-            "fossilccoaldemand":0.524,
+            "othercosts": 78.1,
+            "fossilccoaldemand":0.464,
             "fossilpcidemand":0.151,
-            "fossilngdemand":1.53,
-            "co2ccusupply": 1.53,
+            "fossilngdemand":1.06,
+            "ironoredemand":1.58,
+            "scrapdemand":0.17,
+            "co2ccusupply": 1.24,
             "unit": "EUR/t",
             "desc": "BF-BOF + CCU"
         },
         {
             "key": "h2_steel",
-            "capex": 745.2,
+            "capex": 556,
+            "opex": 3,
             "lifetime": 18,
             "wacc": 0.1,
             "flh": 0.9,
-            "othercosts": 337,
-            "elecdemand": 0.69,
-            "h2demand": 1.62,
+            "othercosts": 50.7,
+            "elecdemand": 0.68,
+            "h2demand": 1.85,
+            "ironoredemand":1.41,
+            "scrapdemand":0.13,
             "fossilngdemand":0.57,
             "unit": "EUR/t",
-            "desc": "Direct reduction of iron with <br>green H2 + electric arc furnace"
+            "desc": "Direct reduction of iron with <br>H2 + electric arc furnace"
         },
         {
             "key": "fossil_chem",
@@ -347,7 +373,7 @@
             "fossilnaphtademand": 1.56,
             "recycledco2": 0.314,
             "unit": "EUR/t",
-            "desc": "Olefin production through naphtha cracking"
+            "desc": "Olefin production through<br>naphtha cracking"
         },
         {
             "key": "comp_chem",
@@ -360,7 +386,7 @@
             "recycledco2": 0.314,
             "compensation": true,
             "unit": "EUR/t",
-            "desc": "Fossil route + DACCS compensation"
+            "desc": "Fossil route<br>+ CDR compensation"
         },
         {
             "key": "efuel_chem",
@@ -411,7 +437,7 @@
             "co2em": 0.563,
             "compensation": true,
             "unit": "EUR/t",
-            "desc": "Standard cement production <br>+DACCS compensation"
+            "desc": "Standard cement production <br>+CDR compensation"
         },
         {
             "key": "ccs_cement",
