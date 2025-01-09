@@ -9,7 +9,7 @@ from src.utils import load_yaml_plot_config_file
 import numpy as np
 
 class HeatMapPlot(BasePlot):
-    figs, cfg = load_yaml_plot_config_file('HeatmapPlot')
+    figs, cfg = load_yaml_plot_config_file('HeatMapPlot')
     # for now, only one figure so subplots are not needed
     #_add_subfig_name = True
 
