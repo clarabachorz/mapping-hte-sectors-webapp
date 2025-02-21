@@ -6,7 +6,6 @@ figures:
       'Sectoral levelized cost components for the five HTE sectors.'
     display:
     - ''
-    - 'advanced'
     size:
       print:
         width: 180.0  # unit mm

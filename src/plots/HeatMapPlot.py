@@ -20,9 +20,12 @@ class HeatMapPlot(BasePlot):
         df = outputs['heatmap_df']
         contour_df = outputs['contour_df']
         hm_transparency_df = outputs['hm_transparency_df']
+        optioninfo_df = outputs['optioninfo_df']
 
-        # df = px.data.medals_wide(indexed=True)
-        # fig = px.imshow(df)
+        sector_name = self._glob_cfg['sector'][inputs['selected_sector']]['label']
+        case_label = self._glob_cfg['case'][inputs['selected_case']]['label']
+
+
         fig = go.Figure()
 
 
@@ -49,11 +52,11 @@ class HeatMapPlot(BasePlot):
                 hoverinfo="skip",
             )
         )
-        fig = self._add_contours(fig, contour_df)
+        fig = self._add_contours(fig, contour_df, z_values=optioninfo_df.values)
 
         tr_colorscale = [
-            [0.0, "rgba(255, 255, 255, 1.0)"],   # Fully opaque white at value 0
-            [1.0, "rgba(255, 255, 255, 0.0)"],   # Fully transparent white at value 100+
+            [0.0, "rgba(251, 251, 251, 1.0)"],
+            [1.0, "rgba(250, 250, 250, 0.0)"],
         ]
 
         fig.add_trace(
@@ -72,6 +75,7 @@ class HeatMapPlot(BasePlot):
 
         fig.update_xaxes(tickfont=dict(size=8))
         fig.update_layout(
+        title=self.cfg['title']+sector_name+"<br>"+case_label,
         yaxis_title=self.cfg['yaxis_title'],
         xaxis_title=self.cfg['xaxis_title'],
         legend_title='',
@@ -101,7 +105,7 @@ class HeatMapPlot(BasePlot):
         
         return custom_colorscale
 
-    def _add_contours(self, fig, contour_df):
+    def _add_contours(self, fig, contour_df, z_values):
         #contours
         fig.add_trace(
             go.Contour(
@@ -119,6 +123,13 @@ class HeatMapPlot(BasePlot):
                     showlabels=True,
                 ),
                 showscale=False,
+                hoverinfo="text",
+                hovertemplate="<b>Non-fossil CO<sub>2</sub> cost:</b>: €%{x}/tCO<sub>2</sub><br>"
+                      "<b>Low-emission H<sub>2</sub> cost</b>: €%{y}/MWh<br>"
+                      #"<b>Abatement cost</b>: €%{z:.2f}/tCO2<extra></extra>"
+                      "<b>Abatement cost</b>: €%{z:.2f}/tCO2<br>"
+                      "<b>Abatement option</b>: %{customdata}<extra></extra>",
+                customdata=z_values,
             )
         )
         return fig

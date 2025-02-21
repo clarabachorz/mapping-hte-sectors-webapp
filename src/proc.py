@@ -6,25 +6,38 @@ from calc import process_full_df
 import multiprocessing as mp
 import itertools
 import matplotlib
-
+from dash import callback_context
 
 # process inputs into outputs
 def process_inputs(inputs: dict, outputs: dict):
     full_df, LCO_breakdown = get_basic_LCOPs(inputs)
-    heatmap_df, contour_df, hm_transparency_df = get_heatmap_data(inputs)
-
+    full_hm_df = get_heatmap_data()
     ##add heat map processing here (only getting the data for the resolution determined. Filtering will be carried out in the HeatMap class)
 
+    # basic LCOs and breakdown
     outputs['full_df'] = full_df
     outputs['full_df_breakdown'] = LCO_breakdown
-    #heatmap data
+    #advanced breakdown for the sectors and fuels
+    outputs['df_sectors'], outputs['df_fuels'] = breakdown_LCO_comps(LCO_breakdown)
+
+    #filter the full hm df
+    selected_sector = inputs["selected_sector"]
+    selected_case = inputs["selected_case"]
+    df_final = full_hm_df[(full_hm_df["sector"] == selected_sector)&(full_hm_df["scenario"] == selected_case)]
+    #take the 4 different dfs needed
+    heatmap_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="type_ID")
+    contour_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="fscp")
+    hm_transparency_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="delta_fscp")
+    optioninfo_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="code")
+    #heatmap data to outputs
     outputs['heatmap_df'] = heatmap_df
     outputs['contour_df'] = contour_df
     outputs['hm_transparency_df'] = hm_transparency_df
-    #advanced breakdown for the sectors, not currently used
-    outputs['df_sectors'], outputs['df_fuels'] = breakdown_LCO_comps(LCO_breakdown)
+    outputs['optioninfo_df'] = optioninfo_df
 
-def get_heatmap_data(inputs:dict):
+
+
+def get_heatmap_data():
     """Obtain the data for the heatmap
 
     Args:
@@ -35,8 +48,8 @@ def get_heatmap_data(inputs:dict):
     """
     #define heatmap resolution
     param_dict = {
-        "h2_LCO": np.arange(0, 242, 2),  # used to be 2
-        "co2_LCO": np.arange(0, 1225, 25),  # used to be 25
+        "h2_LCO": np.arange(0, 245, 5),  # used to be 2
+        "co2_LCO": np.arange(0, 1300, 100),  # used to be 25
         "co2ts_LCO": [15],    
     }
 
@@ -50,18 +63,9 @@ def get_heatmap_data(inputs:dict):
 
     #make discrete heat map by assigning a "type ID" to each technology
     dict_type_ID = {"h2": 0, "efuel": 0.25, "comp":0.5, "ccu":0.75, "ccs":1}
-
-
     df_final["type_ID"] = df_final["type"].map(dict_type_ID)
 
-    df_final = df_final[df_final["sector"] == "steel"]
-    df_final = df_final[df_final["scenario"] == "normal"]
-
-    heatmap_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="type_ID")
-    contour_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="fscp")
-    hm_transparency_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="delta_fscp")
-
-    return heatmap_df, contour_df, hm_transparency_df
+    return df_final
 
 def heatmap_calc_dfs(param_set, param_dict):
     temp_dict = dict(zip(param_dict.keys(), param_set))

@@ -72,8 +72,8 @@ webapp = Webapp(
     piw_id='hard-to-electrify',
     metadata=metadata,
     pages={
-        '': 'Simple',
-        'advanced': 'Advanced',
+        '': 'Levelized costs',
+        'advanced': 'Mitigation landscapes (Heat maps)',
     },
     load=[define_inputs],
     ctrls=[main_ctrl],
@@ -82,6 +82,9 @@ webapp = Webapp(
     ] + [
         State(f"simple-{input_field_id}", 'value')
         for input_field_id in input_fields
+    ] +[
+        State('industry-dropdown', 'value'),
+        State('dropdown-case', 'value'),
     ],
     update=[update_inputs],
     proc=[process_inputs],
@@ -89,7 +92,7 @@ webapp = Webapp(
     glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,
-    input_caching=False,
+    input_caching=True,
 )
 
 

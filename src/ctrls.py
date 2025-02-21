@@ -9,8 +9,22 @@ input_fields = {
     'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
 }
 
+#define drop down options
+dropdown_options_sectors = [
+    {'label': 'Steel', 'value': 'steel'},
+    {'label': 'Maritime', 'value': 'ship'},
+    {'label': 'Aviation', 'value': 'plane'},
+    {'label': 'Cement', 'value': 'cement'},
+    {'label': 'Chemicals', 'value': 'chem'},
+]
 
-# create main control card
+dropdown_options_case = [
+    {'label': 'No conditions', 'value': 'normal'},
+    {'label': 'CCU coupling', 'value': 'ccu'},
+    {'label': 'Full climate neutrality', 'value': 'comp'},
+]
+
+#create dropdown
 def main_ctrl(default_inputs: dict):
     return [html.Div(
         id='simple-controls-card',
@@ -19,9 +33,9 @@ def main_ctrl(default_inputs: dict):
                     item
                     for input_field_id, input_field_name in input_fields.items()
                     for item in (
-                        dbc.Label(
+                        html.Label(
                             input_field_name,
-                            html_for=f"simple-{input_field_id}",
+                            htmlFor=f"simple-{input_field_id}",
                         ),
                         dcc.Input(
                             id=f"simple-{input_field_id}",
@@ -33,6 +47,33 @@ def main_ctrl(default_inputs: dict):
                 ],
                 className='card-element',
             ),
+            #dropdown: sectors
+            html.Div(
+                children=[
+                    html.Label("Select HTE sector to plot (Heatmap page only)", htmlFor="industry-dropdown"),
+                    dcc.Dropdown(
+                        id="industry-dropdown",
+                        options=dropdown_options_sectors,
+                        placeholder="Choose an option",
+                        value=default_inputs.get('selected_sector', 'steel')
+                    ),
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                children=[
+                    html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
+                    dcc.Dropdown(
+                        id="dropdown-case",
+                        options=dropdown_options_case,
+                        placeholder="Choose an option",
+                        value=default_inputs.get('selected_case', 'normal')
+                    ),
+                ],
+                className='card-element',
+            ),
+
+            # Generate Button
             html.Div(
                 children=[
                     html.Button(id='simple-update', n_clicks=0, children='GENERATE', className='btn btn-primary'),

@@ -15,6 +15,14 @@ sector:
     label: Cement
     unit: EUR/t<sub>clinker</sub>
 
+case:
+  normal:
+    label: '<b>No conditions</b>'
+  ccu:
+    label: '<b>CCU coupling:</b> CCU utilization requires a source (cement or steel).'
+  comp:
+    label: '<b>Climate neutrality:</b> Full climate neutrality (compensation only for residual emissions).<br>CCU coordination is also required.'
+
 cost_types:
   capex:
     label: Annualised CAPEX
@@ -48,10 +56,10 @@ cost_types:
     colour: '#31393C'
   ironore:
     label: Iron ore
-    colour: '#31393C'
+    colour: '#b069db'
   scrap:
     label: Scrap
-    colour: '#31393C'
+    colour: '#b069db'
   elec:
     label: Electricity
     colour: '#e6af2e'
