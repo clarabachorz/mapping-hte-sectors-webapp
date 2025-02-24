@@ -34,7 +34,7 @@ class HeatMapPlot(BasePlot):
         z_values = df.values
 
         custom_cmap = self._make_cmap()
-        cmap_labels = ["H2/NH3", "E-Fuel", "Compensation", "CCU", "CCS"]
+        cmap_labels = ["H2/NH3", "Synfuel", "Compensation", "CCU", "CCS"]
 
         fig.add_trace(
             go.Heatmap(

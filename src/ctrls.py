@@ -4,8 +4,8 @@ import dash_bootstrap_components as dbc
 
 # define input fields with IDs and names
 input_fields = {
-    'h2-LCO': 'Hydrogen supply cost (EUR/MWh)',
-    'co2-LCO': 'CO₂ supply cost (EUR/t)',
+    'h2-LCO': 'Low-emission hydrogen cost (EUR/MWh)',
+    'co2-LCO': 'Non-fossil CO₂ cost (EUR/t)',
     'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
 }
 

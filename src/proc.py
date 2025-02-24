@@ -1,13 +1,19 @@
-import calc.calc_costs as calc_costs
 import pandas as pd
 import numpy as np
-from calc.calc_costs import calc_LCO_breakdown, calc_all_LCO_wbreakdown, breakdown_LCO_comps
 import matplotlib
+import multiprocessing as mp
+import itertools
+
+import calc.calc_costs as calc_costs
+from calc.calc_costs import calc_LCO_breakdown, calc_all_LCO_wbreakdown, breakdown_LCO_comps
+from calc import process_full_df
+from . import load
+
 
 #initiate with same parameters as load.py
-previous_inputs = {'h2_LCO': 70.0,
-        'co2_LCO': 300.0,
-        'co2ts_LCO': 15.0}
+previous_inputs = {'h2_LCO': load.H2_LCO_DEFAULT,
+        'co2_LCO': load.CO2_LCO_DEFAULT,
+        'co2ts_LCO': load.CO2TS_LCO_DEFAULT}
 
 # process inputs into outputs
 def process_inputs(inputs: dict, outputs: dict):
@@ -23,26 +29,24 @@ def process_inputs(inputs: dict, outputs: dict):
     #advanced breakdown for the sectors and fuels
     outputs['df_sectors'], outputs['df_fuels'] = breakdown_LCO_comps(LCO_breakdown)
 
-    # Obtain full_hm_df. If CO2ts params have been changed, recalculate hm data accordingly
-    if inputs["params"]["co2ts_LCO"] != previous_inputs["co2ts_LCO"]:
-        print("CO2TS changed")
-        print(inputs["params"]["co2ts_LCO"])
-        full_hm_df = recalc_hm_df(inputs)
-        #save the new full_hm_df
-        inputs['full_hm_df'] = full_hm_df
-    else:
-        full_hm_df = inputs['full_hm_df']
-
-    # filter the full hm df
+    # Load inputs
+    full_hm_df = inputs['full_hm_df']
     selected_sector = inputs["selected_sector"]
     selected_case = inputs["selected_case"]
-    df_final = full_hm_df[(full_hm_df["sector"] == selected_sector)&(full_hm_df["scenario"] == selected_case)]
+
+    # filter the full hm df. If the co2 transport and storage cost has been changed, the heat map data is updated
+    if inputs["params"]["co2ts_LCO"] != previous_inputs["co2ts_LCO"] or inputs["params"]["co2ts_LCO"] != load.CO2TS_LCO_DEFAULT:
+        new_hm_df = recalc_hm_df(inputs)
+        df_final = new_hm_df[new_hm_df["sector"] == selected_sector]
+    else:
+        df_final = full_hm_df[(full_hm_df["sector"] == selected_sector)&(full_hm_df["scenario"] == selected_case)]
 
     #take the 4 different dfs needed
     heatmap_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="type_ID")
     contour_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="fscp")
     hm_transparency_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="delta_fscp")
     optioninfo_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="code")
+
     #heatmap data to outputs
     outputs['heatmap_df'] = heatmap_df
     outputs['contour_df'] = contour_df
@@ -62,11 +66,50 @@ def recalc_hm_df(inputs:dict):
     Returns;
         full_hm_df: df containing the updated data for the heatmap
     """
-    old_hm_df = inputs['full_hm_df']
+    new_co2ts_LCO = inputs["params"]["co2ts_LCO"]
+    selected_case = inputs["selected_case"]
 
-    #do something
+    param_dict = {
+        "h2_LCO": np.arange(0, 245, 5),  # used to be 2
+        "co2_LCO": np.arange(0, 1250, 50),  # used to be 25
+        "co2ts_LCO": [new_co2ts_LCO],    
+    }
+
+    params = itertools.product(*param_dict.values())
+
+    with mp.Pool(mp.cpu_count()) as pool:
+        list_of_dfs = pool.starmap(heatmap_recalc_dfs, [(param_set, param_dict, selected_case) for param_set in params])
     
+    df_final = pd.concat(list_of_dfs, ignore_index=True)
 
+    #make discrete heat map by assigning a "type ID" to each technology
+    dict_type_ID = {"h2": 0, "efuel": 0.25, "comp":0.5, "ccu":0.75, "ccs":1}
+    df_final["type_ID"] = df_final["type"].map(dict_type_ID)
+
+    return df_final
+    
+def heatmap_recalc_dfs(param_set, param_dict, scenario):
+    """Compute heatmap data for a given case/scenario
+
+    Args:
+        param_set (tuple): Parameter values to use
+        param_dict (dict): Parameter dictionary
+        scenario (str): The scenario/case to compute
+
+    Returns:
+        pd.DataFrame: The calculated heatmap dataframe
+    """
+    temp_dict = dict(zip(param_dict.keys(), param_set))
+    load_json = True
+    if scenario == "normal":
+        return process_full_df.get_df(scenario = "normal", load_json = load_json, **temp_dict)
+    elif scenario == "ccu":
+        return process_full_df.get_df(scenario = "ccu", CCU_coupling=True, DACCS = True, compensate=False, load_json= load_json, **temp_dict)
+    elif scenario == "comp":
+        return process_full_df.get_df(scenario = "comp", CCU_coupling=True, DACCS=False, compensate=True, load_json=load_json, **temp_dict)
+
+
+    return [df_normal, df_ccu, df_comp]
 
 
     

@@ -6,16 +6,17 @@ import numpy as np
 import pandas as pd
 import time
 
-normal_time = 0
-ccu_time = 0
-comp_time = 0
-n_count = 0
+
+#initial params
+H2_LCO_DEFAULT = 70.0
+CO2_LCO_DEFAULT = 300.0
+CO2TS_LCO_DEFAULT = 15.0
 
 def define_inputs(inputs: dict):
     inputs['params'] = {
-        'h2_LCO': 70.0,
-        'co2_LCO': 300.0,
-        'co2ts_LCO': 15.0,
+        'h2_LCO': H2_LCO_DEFAULT,
+        'co2_LCO': CO2_LCO_DEFAULT,
+        'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
     inputs['selected_sector'] = 'steel'
     inputs['selected_case'] = 'normal'
@@ -36,7 +37,7 @@ def get_heatmap_data():
     param_dict = {
         "h2_LCO": np.arange(0, 245, 5),  # used to be 2
         "co2_LCO": np.arange(0, 1300, 100),  # used to be 25
-        "co2ts_LCO": [15],    
+        "co2ts_LCO": [CO2TS_LCO_DEFAULT],    
     }
 
     params = itertools.product(*param_dict.values())

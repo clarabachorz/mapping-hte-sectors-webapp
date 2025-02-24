@@ -120,7 +120,7 @@ class FuelStackedBarPlot(BasePlot):
         # Define your custom legend labels
         legend_labels = {
             'ch3ohccu': 'Fossil CCU-based methanol',
-            'ch3oh': 'E-methanol',
+            'ch3oh': 'Syn-methanol',
             'co2': 'Non-fossil CO<sub>2</sub>',
             'h2': 'Low-emission H<sub>2</sub>',
             #'heat': 'Heat',
