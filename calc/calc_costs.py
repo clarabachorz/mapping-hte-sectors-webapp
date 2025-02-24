@@ -22,19 +22,14 @@ def calc_all_LCO(
 
     if inexistant_techs is None:
         inexistant_techs = [
-            "ccs_plane",
-            "h2_plane",
-            "ccs_ship",
-            "efuel_steel",
-            "ccs_chem",
-            "h2_chem",
-            "efuel_cement",
-            "h2_cement",
+            "ccs_plane","h2_plane","ccs_ship","efuel_steel",
+            "ccs_chem","h2_chem","efuel_cement","h2_cement",
         ]
 
     user_params = kwargs
     Tech.COMMON_DICT = {}
     final_dict = {}
+    # co2ts_components = []
 
     # json file holds external assumptions, which are then updated by user inputs through kwargs
     # to make to code faster, it is preferable to not load the json file every time, and instead use the last read data
@@ -48,29 +43,36 @@ def calc_all_LCO(
 
     # initialise the techs using the assumptions from the json file
     for row in data["techs"]:
-        temp_dict = {
-            k.rsplit("_", 1)[1]: v
-            for k, v in user_params.items()
-            if k.rsplit("_", 1)[0] == row["key"]
-        }
-        row.update(temp_dict)
+
+        #extract user-defined params
+        updated_params = {k.rsplit("_", 1)[1]: v for k, v in user_params.items() if k.rsplit("_", 1)[0] == row["key"]}
+        row.update(updated_params)
+        
+        #create the Techs to update the final dict
         temp_tech = Tech(row, comp=compensate_residual_ems, ccu_income=ccu_income)
 
-        final_dict.update(temp_tech.get_dict())
-    
+        # #extract co2 transport and storage LCO component
+        # co2ts_components.append([row["key"], temp_tech.get_co2_storage_cost()])
+
+    # get the final dict, which is generated from the last tech in the previous loop
+    final_dict.update(temp_tech.get_dict())
+
     ## add an empty entry for technologies that don't exist (inexistant_techs)
-    for i in inexistant_techs:
-        type = i.split("_")[0]
+    # also rename h2 to h2/nh3
+    final_dict.update({
+        i: [np.nan, np.nan, np.nan, "no " + i.split("_")[0].replace("h2", "h2/nh3"), np.nan, np.nan]
+        for i in inexistant_techs
+    })
 
-        if type == "h2":
-            type = "h2/nh3"
+    df = pd.DataFrame.from_dict(final_dict, orient="index").reset_index()
+    df.columns = ["tech", "cost", "em", "elec", "code", "co2", "co2_comp"]
 
-        final_dict[i] = [np.nan, np.nan, np.nan, "no " + type, np.nan, np.nan]
-    #function below takes roughly 1/2 or 1/3 of total task time
-    df = to_df_fmt(final_dict)
-    
-    for key in user_params.keys():
-        df[key] = user_params[key]
+    # # #make the df containing co2ts LCO component and join with final df
+    # co2ts_dict = dict(np.array(co2ts_components))
+    # df["co2ts_LCOcomp"] = df["tech"].map(co2ts_dict)
+
+    #add a column for user defined parameters
+    df = df.assign(**user_params)
 
     return df
 
@@ -137,8 +139,10 @@ def calc_all_LCO_wbreakdown(
 
         final_dict[i] = [np.nan, np.nan, np.nan, "no " + type, np.nan, np.nan]
     #function below takes roughly 1/2 or 1/3 of total task time
-    df = to_df_fmt(final_dict)
-    
+    #df = to_df_fmt(final_dict)
+    df = pd.DataFrame.from_dict(final_dict, orient="index").reset_index()
+    df.columns = ["tech", "cost", "em", "elec", "code", "co2", "co2_comp"]
+
     for key in user_params.keys():
         df[key] = user_params[key]
 
@@ -146,6 +150,7 @@ def calc_all_LCO_wbreakdown(
 
 
 def to_df_fmt(dict):
+    #currently not used. Delete at some point
     rows = [[key] + value for key, value in dict.items()]
 
     df = pd.DataFrame(

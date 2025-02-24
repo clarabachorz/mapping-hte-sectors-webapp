@@ -85,13 +85,13 @@ cost_types:
     label: CO<sub>2</sub> (from a<br> fossil industrial point source)
     colour: '#8E9AAF'
   ch3oh:
-    label: E-methanol
+    label: Syn-methanol
     colour: '#FEB380'
   ch3ohccu:
     label: Syn-methanol (using fossil CO<sub>2</sub> from CCU)
     colour: '#8E9AAF'
   MtJ:
-    label: E-jet fuel (methanol route)
+    label: Syn-jet fuel (methanol route)
     colour: '#FEB380'
   MtJccu:
     label: Syn-jet fuel (methanol route, using fossil CO<sub>2</sub> from CCU)

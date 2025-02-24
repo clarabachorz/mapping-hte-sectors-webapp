@@ -2,17 +2,20 @@ import calc.calc_costs as calc_costs
 import pandas as pd
 import numpy as np
 from calc.calc_costs import calc_LCO_breakdown, calc_all_LCO_wbreakdown, breakdown_LCO_comps
-from calc import process_full_df
-import multiprocessing as mp
-import itertools
 import matplotlib
-from dash import callback_context
+
+#initiate with same parameters as load.py
+previous_inputs = {'h2_LCO': 70.0,
+        'co2_LCO': 300.0,
+        'co2ts_LCO': 15.0}
 
 # process inputs into outputs
 def process_inputs(inputs: dict, outputs: dict):
+    #define global variable
+    global previous_inputs
+
+    #calculate basic abatement cost annd breakdowns
     full_df, LCO_breakdown = get_basic_LCOPs(inputs)
-    full_hm_df = get_heatmap_data()
-    ##add heat map processing here (only getting the data for the resolution determined. Filtering will be carried out in the HeatMap class)
 
     # basic LCOs and breakdown
     outputs['full_df'] = full_df
@@ -20,10 +23,21 @@ def process_inputs(inputs: dict, outputs: dict):
     #advanced breakdown for the sectors and fuels
     outputs['df_sectors'], outputs['df_fuels'] = breakdown_LCO_comps(LCO_breakdown)
 
-    #filter the full hm df
+    # Obtain full_hm_df. If CO2ts params have been changed, recalculate hm data accordingly
+    if inputs["params"]["co2ts_LCO"] != previous_inputs["co2ts_LCO"]:
+        print("CO2TS changed")
+        print(inputs["params"]["co2ts_LCO"])
+        full_hm_df = recalc_hm_df(inputs)
+        #save the new full_hm_df
+        inputs['full_hm_df'] = full_hm_df
+    else:
+        full_hm_df = inputs['full_hm_df']
+
+    # filter the full hm df
     selected_sector = inputs["selected_sector"]
     selected_case = inputs["selected_case"]
     df_final = full_hm_df[(full_hm_df["sector"] == selected_sector)&(full_hm_df["scenario"] == selected_case)]
+
     #take the 4 different dfs needed
     heatmap_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="type_ID")
     contour_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="fscp")
@@ -35,47 +49,27 @@ def process_inputs(inputs: dict, outputs: dict):
     outputs['hm_transparency_df'] = hm_transparency_df
     outputs['optioninfo_df'] = optioninfo_df
 
+    #save inputs
+    previous_inputs = inputs["params"].copy()
 
 
-def get_heatmap_data():
-    """Obtain the data for the heatmap
+def recalc_hm_df(inputs:dict):
+    """Recalculates hm_df based on new co2 transport and storage cost given
 
     Args:
         inputs (dict): Input parameters determined by the user
-
-    Returns:
-        heatmap_df: df containing the data for the heatmap
-    """
-    #define heatmap resolution
-    param_dict = {
-        "h2_LCO": np.arange(0, 245, 5),  # used to be 2
-        "co2_LCO": np.arange(0, 1300, 100),  # used to be 25
-        "co2ts_LCO": [15],    
-    }
-
-    params = itertools.product(*param_dict.values())
-
-    with mp.Pool(mp.cpu_count()) as pool:
-        mainfig_list_of_dfs = pool.starmap(heatmap_calc_dfs, [(param_set, param_dict) for param_set in params])
     
-    list_of_dfs = [df for sublist in mainfig_list_of_dfs for df in sublist]  # Flatten the list
-    df_final = pd.concat(list_of_dfs, ignore_index=True)
+    Returns;
+        full_hm_df: df containing the updated data for the heatmap
+    """
+    old_hm_df = inputs['full_hm_df']
 
-    #make discrete heat map by assigning a "type ID" to each technology
-    dict_type_ID = {"h2": 0, "efuel": 0.25, "comp":0.5, "ccu":0.75, "ccs":1}
-    df_final["type_ID"] = df_final["type"].map(dict_type_ID)
+    #do something
+    
 
-    return df_final
 
-def heatmap_calc_dfs(param_set, param_dict):
-    temp_dict = dict(zip(param_dict.keys(), param_set))
-    load_json = True
 
-    df_normal = process_full_df.get_df(scenario = "normal", load_json = load_json, **temp_dict)
-    df_ccu = process_full_df.get_df(scenario = "ccu", CCU_coupling=True, DACCS = True, compensate=False, load_json= load_json, **temp_dict)
-    df_comp = process_full_df.get_df(scenario = "comp", CCU_coupling=True, DACCS=False, compensate=True, load_json=load_json, **temp_dict)
-
-    return [df_normal, df_ccu, df_comp]
+    
 
 def get_basic_LCOPs(inputs:dict):
     """Obtain basic LCOPs for the given set of parameters (currently low-emission H2 cost and non-fossil CO2 cost)

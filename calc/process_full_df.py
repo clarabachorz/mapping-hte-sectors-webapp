@@ -29,15 +29,12 @@ def diff_fscp(lst):
 
 def lowest_fscp(lst):
     arr = np.array(lst)
-    non_negative_arr = arr[arr >= 0]
-    
-    if non_negative_arr.size == 0:  # If there are only negative values, fscp not well defined => we return the whole array
+
+    if np.all(arr<0): # If there are only negative values, fscp not well defined => we return the whole array
         return arr
-    else:
-        # min_non_negative = non_negative_arr.min()
-        # arr[arr >= 0] = min_non_negative
-        min = arr.min()
-        arr[arr != 0] = min
+
+    min_val = arr.min()
+    arr[arr != 0] = min_val
 
     return arr
 
@@ -62,15 +59,21 @@ def get_lowest_fscp(df):
     lowest_fscp_mask = df.groupby(["sector"])["fscp"].transform(lowest_fscp) == df["fscp"]
     df = df[lowest_fscp_mask]
 
+    if len(df) == 5: #skip the rest of the function if we already have the expected number of rows (1 per sector, so 5)
+        return df
+
     # Filter rows with the lowest cost (only applies to rows with negative FSCPs)
     lowest_cost_mask = df.groupby(["sector"])["cost"].transform(lowest_value) == df["cost"]
     df = df[lowest_cost_mask]
+
+    if len(df) == 5:
+        return df
 
     # Filter rows with the lowest emission (only applies to rows with negative FSCPs, that have the same cost)
     lowest_emission_mask = df.groupby(["sector"])["em"].transform(lowest_value) == df["em"]
     df = df[lowest_emission_mask]
 
-    #if there are still duplicates (same cost and emission), choose one at random
+    # #if there are still duplicates (same cost and emission), choose one at random
     if len(df) != 5:
         df = df.drop_duplicates(subset=["fscp"], keep="first")
 
@@ -125,18 +128,23 @@ def ccu_possible(df, big_df):
     pd.DataFrame: The updated DataFrame.
     """
     ccu_mask = df["type"].str.contains('ccu')
-    if ccu_mask.any():
-        sector_mask1 = df["sector"].str.contains('chem|plane|ship')
-        sector_mask2 = df["sector"].str.contains('steel|cement')
-        if sector_mask1[ccu_mask].any() and sector_mask2[ccu_mask].any():
-            return True, big_df
-        else:
-            ccu_mask_big_df = big_df["type"].str.contains('ccu')
-            big_df.loc[ccu_mask_big_df, "fscp"] = 100000
-            return False, big_df
-    else:
-        #case where there is no ccu as best option in this df
+    if not ccu_mask.any():
         return True, big_df
+
+    ccu_sectors = df.loc[ccu_mask, "sector"]
+    uptakers = {"chem", "plane", "ship"}
+    producers = {"steel", "cement"}
+
+    has_uptaker = ccu_sectors.isin(uptakers).any()
+    has_producer = ccu_sectors.isin(producers).any()
+
+    if has_uptaker and has_producer:
+        return True, big_df
+    
+    #erlse:
+    big_df.loc[big_df["type"].eq("ccu"), "fscp"] = 100000
+    return False, big_df
+   
 
 def get_df(scenario = None, DACCS = True, CCU_coupling = False, compensate = False, retrofit = False, retrofit_techs = None, load_json = True, **kwargs):
     # run the technoeconomic calculation
@@ -144,8 +152,7 @@ def get_df(scenario = None, DACCS = True, CCU_coupling = False, compensate = Fal
         raise ValueError("If retrofit is True, retrofit_techs cannot be None. Please provide a list of technologies to retrofit.")
 
     if retrofit:
-        new_capex_kwargs = retrofit_params(retrofit_techs = retrofit_techs)
-        kwargs.update(new_capex_kwargs)
+        kwargs.update(retrofit_params(retrofit_techs = retrofit_techs))
 
     inexistant_techs_ifNODACCS=[
         "ccs_plane",
@@ -183,24 +190,27 @@ def get_df(scenario = None, DACCS = True, CCU_coupling = False, compensate = Fal
     df_total = calc_costs.calc_all_LCO(**calc_all_LCO_args)
 
     # overall data frame
-    df_total.reset_index(inplace=True, drop=True)
+    # commented out. This keeps an ID column in the final df, but makes the code faster
+    #df_total.reset_index(inplace=True, drop=True)
 
     # extract cost of h2 for the plot
-    h2_cost = df_total.loc[df_total["tech"] == "h2", "cost"].iat[0]
-    df_total["h2"] = h2_cost
+    # commented out. Not required for webapp
+    # h2_cost = df_total.loc[df_total["tech"] == "h2", "cost"].iat[0]
+    # df_total["h2"] = h2_cost
 
     # filter only for the sectors we are interested in
-    df_data = df_total[df_total["tech"].str.contains("plane|ship|steel|chem|cement")]
+    # df_data = df_total[df_total["tech"].str.contains("plane|ship|steel|chem|cement")]
+    # faster than the alternative above
+    relevant_sectors = {"plane", "ship", "steel", "chem", "cement"}
+    df_data = df_total[df_total["tech"].apply(lambda x: any(sec in x for sec in relevant_sectors))]
 
     # split tech name into type (ccs, ccu, ..) and actual sector
     df_data[["type", "sector"]] = df_data["tech"].str.split(pat="_", n=1, expand=True)
 
-    df_data.sort_values(by=["sector", "type"], ascending=[True, False], inplace=True)
+    #df_data = df_data.sort_values(by=["sector", "type"], ascending=[True, False])
 
-    df_data.replace(-1, np.nan, inplace=True)
+    df_data = df_data.replace(-1, np.nan)
 
-
-    #The code below is faster than the previous (shorter) method of using groupby + apply with the calc_FSCP function.
     
     # Create a separate DataFrame with only the 'fossil' rows and select only necessary columns
     fossil_df = df_data[df_data["type"] == "fossil"][["sector", "cost", "em", "elec"]]
@@ -210,8 +220,6 @@ def get_df(scenario = None, DACCS = True, CCU_coupling = False, compensate = Fal
 
     # Now you can calculate the FSCP directly without using groupby or apply
     df_macc["fscp"] = calc_costs.FSCP(df_macc["cost"], df_macc["em"], df_macc["cost_fossil"], df_macc["em_fossil"])
-    df_macc["elec_fscp"] = calc_costs.FSCP(df_macc["elec"], df_macc["em"], df_macc["elec_fossil"], df_macc["em_fossil"])
-    df_macc["co2_comp"] = df_macc["co2_comp"] * 100 / df_macc["em_fossil"]
 
     df_temp = get_lowest_fscp(df_macc)
 

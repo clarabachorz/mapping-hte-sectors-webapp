@@ -92,7 +92,7 @@ webapp = Webapp(
     glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,
-    input_caching=True,
+    input_caching=False,
 )
 
 

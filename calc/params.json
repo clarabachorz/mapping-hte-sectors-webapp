@@ -200,7 +200,7 @@
             "othercosts": 3.28e-2,
             "fossilJdemand": 2.47e-4,
             "unit": "EUR/PAX/km",
-            "desc": "Fossil kerosene aircraft"
+            "desc": "Fossil jet fuel aircraft"
         },
         {
             "key": "comp_plane",
@@ -208,14 +208,14 @@
             "fossilJdemand": 2.47e-4,
             "compensation": true,
             "unit": "EUR/PAX/km",
-            "desc": "Fossil kerosene aircraft<br>+ CDR compensation"
+            "desc": "Fossil jet fuel aircraft<br>+ CDR compensation"
         },
         {
             "key": "efuel_plane",
             "othercosts": 3.28e-2,
             "MtJdemand": 2.47e-4,
             "unit": "EUR/PAX/km",
-            "desc": "E-kerosene aircraft<br>(non-fossil CO2-based)"
+            "desc": "Syn-jet fuel aircraft<br>(non-fossil CO2-based)"
         },
         {
             "key": "ccu_plane",
@@ -260,7 +260,7 @@
             "wacc": 0.09,
             "ch3ohdemand": 2.22222,
             "unit": "EUR/MWh",
-            "desc": "E-methanol ICE<br>(non-fossil CO2-based)"
+            "desc": "Syn-methanol ICE<br>(non-fossil CO2-based)"
         },
         {
             "key": "ccu_ship",
@@ -397,7 +397,7 @@
             "ch3ohdemand": 16.41,
             "recycledco2": 0.314,
             "unit": "EUR/t",
-            "desc": "E-methanol to olefin"
+            "desc": "Syn-methanol to olefin (non-fossil CO2)"
         },
         {
             "key": "ccu_chem",
