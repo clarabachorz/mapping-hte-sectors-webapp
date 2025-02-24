@@ -55,8 +55,6 @@ class StackedBarPlot(BasePlot):
         df_plot = df[df["sector"]==sector]
         df_plot = df_plot.drop(columns=['LCO', 'type', 'sector']).melt(id_vars='tech').fillna(0.0)
 
-        #print(self._glob_cfg['sector_names'].items())
-        #continue here later, use to get hoover data
 
         if self._target == 'webapp':
             df_plot['hover_ptype'] = df_plot['variable'].map({

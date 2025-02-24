@@ -16,68 +16,94 @@ class HeatMapPlot(BasePlot):
     #def _decorate(...) if required, see Philipps repo
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
-        #params = inputs['params']
+
         df = outputs['heatmap_df']
         contour_df = outputs['contour_df']
         hm_transparency_df = outputs['hm_transparency_df']
         optioninfo_df = outputs['optioninfo_df']
 
-        sector_name = self._glob_cfg['sector'][inputs['selected_sector']]['label']
         case_label = self._glob_cfg['case'][inputs['selected_case']]['label']
 
+        #get unique sectors
+        unique_sectors = ["chem", "plane", "ship", "steel", "cement"]
 
-        fig = go.Figure()
+        #create subplot
+        cols = len(unique_sectors)
+        fig = make_subplots(rows=1, cols=cols, 
+                            x_title=self.cfg['xaxis_title'],
+                            subplot_titles=[f"{self._glob_cfg['sector'][sector]['label']}" for sector in unique_sectors])
 
 
-        x_values = df.columns
-        y_values = df.index
-        z_values = df.values
-
+        #fig = go.Figure()
         custom_cmap = self._make_cmap()
         cmap_labels = ["H2/NH3", "Synfuel", "Compensation", "CCU", "CCS"]
 
-        fig.add_trace(
-            go.Heatmap(
-                z=z_values,
-                x=x_values,
-                y=y_values,
-                zmin = 0,
-                zmax=1,
-                colorscale=custom_cmap,
-                colorbar = dict(
-                    title=self.cfg['colorbar_title'],
-                    tickvals=[0.1, 0.3, 0.5, 0.7, 0.9],
-                    ticktext=cmap_labels,
+        for i, sector in enumerate(unique_sectors, start=1):
+
+            #extract the sector data
+            sector_df = df.xs(sector, level="sector")
+            sector_contour_df = contour_df.xs(sector, level="sector")
+            sector_transparency_df = hm_transparency_df.xs(sector, level="sector")
+            sector_optioninfo_df = optioninfo_df.xs(sector, level="sector")
+
+            x_values = sector_df.columns
+            y_values = sector_df.index
+            z_values = sector_df.values
+
+
+
+            fig.add_trace(
+                go.Heatmap(
+                    z=z_values,
+                    x=x_values,
+                    y=y_values,
+                    zmin = 0,
+                    zmax=1,
+                    colorscale=custom_cmap,
+                    showscale=(i == cols),
+                    colorbar = dict(
+                        title=self.cfg['colorbar_title'],
+                        tickvals=[0.1, 0.3, 0.5, 0.7, 0.9],
+                        ticktext=cmap_labels,
+                        x = 0.5,
+                        y= -0.45,
+                        orientation='h'
+                    ) if i == cols else None,
+                    hoverinfo="skip",
                 ),
-                hoverinfo="skip",
+                row = 1, col = i
             )
-        )
-        fig = self._add_contours(fig, contour_df, z_values=optioninfo_df.values)
+            fig = self._add_contours(fig, sector_contour_df, z_values=sector_optioninfo_df.values, row = 1, col = i)
 
-        tr_colorscale = [
-            [0.0, "rgba(251, 251, 251, 1.0)"],
-            [1.0, "rgba(250, 250, 250, 0.0)"],
-        ]
+            tr_colorscale = [
+                [0.0, "rgba(250, 250, 250, 1.0)"],
+                [1.0, "rgba(250, 250, 250, 0.0)"],
+            ]
 
-        fig.add_trace(
-            go.Heatmap(
-                z=hm_transparency_df.values,
-                x=hm_transparency_df.columns,
-                y=hm_transparency_df.index,
-                colorscale=tr_colorscale,
-                zmin = 0,
-                zmax=100,
-                showscale=False,
-                hoverinfo="skip",
+            fig.add_trace(
+                go.Heatmap(
+                    z=sector_transparency_df.values,
+                    x=sector_transparency_df.columns,
+                    y=sector_transparency_df.index,
+                    colorscale=tr_colorscale,
+                    zmin = 0,
+                    zmax=100,
+                    showscale=False,
+                    hoverinfo="skip",
+                ),
+                row= 1, col = i
             )
-        )
 
+            if i > 1:
+                fig.update_yaxes(showticklabels=False, row=1, col=i)
+                
 
         fig.update_xaxes(tickfont=dict(size=8))
         fig.update_layout(
-        title=self.cfg['title']+sector_name+"<br>"+case_label,
+        margin=dict(l=50, r=10, t=100, b=50),
+        title=self.cfg['title']+case_label,
         yaxis_title=self.cfg['yaxis_title'],
-        xaxis_title=self.cfg['xaxis_title'],
+        #xaxis_title=self.cfg['xaxis_title'],
         legend_title='',
         legend=dict(
             yanchor="bottom",
@@ -105,7 +131,7 @@ class HeatMapPlot(BasePlot):
         
         return custom_colorscale
 
-    def _add_contours(self, fig, contour_df, z_values):
+    def _add_contours(self, fig, contour_df, z_values, row, col):
         #contours
         fig.add_trace(
             go.Contour(
@@ -130,6 +156,7 @@ class HeatMapPlot(BasePlot):
                       "<b>Abatement cost</b>: €%{z:.2f}/tCO2<br>"
                       "<b>Abatement option</b>: %{customdata}<extra></extra>",
                 customdata=z_values,
-            )
+            ),
+            row = row, col = col
         )
         return fig

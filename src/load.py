@@ -18,7 +18,6 @@ def define_inputs(inputs: dict):
         'co2_LCO': CO2_LCO_DEFAULT,
         'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
-    inputs['selected_sector'] = 'steel'
     inputs['selected_case'] = 'normal'
 
     inputs['full_hm_df'] = get_heatmap_data()
@@ -51,8 +50,6 @@ def get_heatmap_data():
     #make discrete heat map by assigning a "type ID" to each technology
     dict_type_ID = {"h2": 0, "efuel": 0.25, "comp":0.5, "ccu":0.75, "ccs":1}
     df_final["type_ID"] = df_final["type"].map(dict_type_ID)
-    print(df_final[df_final["scenario"] == "normal"])
-    print(df_final[df_final["scenario"] == "normal"].columns)
     return df_final
 
 def heatmap_calc_dfs(param_set, param_dict):

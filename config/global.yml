@@ -19,9 +19,9 @@ case:
   normal:
     label: '<b>No conditions</b>'
   ccu:
-    label: '<b>CCU coupling:</b> CCU utilization requires a source (cement or steel).'
+    label: '<b>CCU coupling.</b> CCU utilization requires a source (cement or steel).'
   comp:
-    label: '<b>Climate neutrality:</b> Full climate neutrality (compensation only for residual emissions).<br>CCU coordination is also required.'
+    label: '<b>Climate neutrality.</b> Full climate neutrality (compensation only for residual emissions).<br>CCU coordination is also required.'
 
 cost_types:
   capex:

@@ -83,7 +83,6 @@ webapp = Webapp(
         State(f"simple-{input_field_id}", 'value')
         for input_field_id in input_fields
     ] +[
-        State('industry-dropdown', 'value'),
         State('dropdown-case', 'value'),
     ],
     update=[update_inputs],

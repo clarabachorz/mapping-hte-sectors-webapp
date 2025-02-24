@@ -1,9 +1,9 @@
 figures:
   fig3:
     name: Fig. 3
-    title: 'Mitigation landscape for a selected HTE sector'
+    title: 'Mitigation landscape for the HTE sectors'
     desc:
-      'Mitigation landscape: the most cost-effective mitigation option (in terms of abatement costs) for any given set of parameter is shown on the heat map.'
+      'Mitigation landscape: the most cost-effective mitigation option, in terms of abatement costs, is shown for any given set of low-emission hydrogen and non-fossil CO2 cost.'
     display:
     - 'advanced'
     size:
@@ -12,9 +12,9 @@ figures:
         height: 80.0  # unit mm
       webapp:
         width: 100.0  # unit %
-        height: 800.0  # unit px
+        height: 500.0  # unit px
 config:
-  title: '<b>Sector:</b> '
+  title: '<b>Case:</b> '
   xaxis_title: Non-fossil CO2 cost
   yaxis_title: Low-emission H2 cost
   colorbar_title: Abatement options

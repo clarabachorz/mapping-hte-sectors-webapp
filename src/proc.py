@@ -31,21 +31,20 @@ def process_inputs(inputs: dict, outputs: dict):
 
     # Load inputs
     full_hm_df = inputs['full_hm_df']
-    selected_sector = inputs["selected_sector"]
     selected_case = inputs["selected_case"]
 
     # filter the full hm df. If the co2 transport and storage cost has been changed, the heat map data is updated
     if inputs["params"]["co2ts_LCO"] != previous_inputs["co2ts_LCO"] or inputs["params"]["co2ts_LCO"] != load.CO2TS_LCO_DEFAULT:
         new_hm_df = recalc_hm_df(inputs)
-        df_final = new_hm_df[new_hm_df["sector"] == selected_sector]
+        df_final = new_hm_df
     else:
-        df_final = full_hm_df[(full_hm_df["sector"] == selected_sector)&(full_hm_df["scenario"] == selected_case)]
+        df_final = full_hm_df[full_hm_df["scenario"] == selected_case]
 
     #take the 4 different dfs needed
-    heatmap_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="type_ID")
-    contour_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="fscp")
-    hm_transparency_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="delta_fscp")
-    optioninfo_df = df_final.pivot(index="h2_LCO", columns="co2_LCO", values="code")
+    heatmap_df = df_final.pivot(index=["sector", "h2_LCO"], columns="co2_LCO", values="type_ID")
+    contour_df = df_final.pivot(index=["sector", "h2_LCO"], columns="co2_LCO", values="fscp")
+    hm_transparency_df = df_final.pivot(index=["sector", "h2_LCO"], columns="co2_LCO", values="delta_fscp")
+    optioninfo_df = df_final.pivot(index=["sector", "h2_LCO"], columns="co2_LCO", values="code")
 
     #heatmap data to outputs
     outputs['heatmap_df'] = heatmap_df

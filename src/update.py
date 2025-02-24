@@ -9,7 +9,6 @@ def update_inputs(inputs_updated: dict, btn_pressed: str, args: list):
     if not ctx.triggered or ctx.triggered[0]['value'] is None:
         return inputs_updated
 
-    inputs_updated['selected_sector'] = args[-3]
     inputs_updated['selected_case'] = args[-2]
     
     for input_field_id in input_fields:

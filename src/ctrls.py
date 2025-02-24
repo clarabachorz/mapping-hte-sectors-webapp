@@ -47,19 +47,6 @@ def main_ctrl(default_inputs: dict):
                 ],
                 className='card-element',
             ),
-            #dropdown: sectors
-            html.Div(
-                children=[
-                    html.Label("Select HTE sector to plot (Heatmap page only)", htmlFor="industry-dropdown"),
-                    dcc.Dropdown(
-                        id="industry-dropdown",
-                        options=dropdown_options_sectors,
-                        placeholder="Choose an option",
-                        value=default_inputs.get('selected_sector', 'steel')
-                    ),
-                ],
-                className='card-element',
-            ),
             html.Div(
                 children=[
                     html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
