@@ -19,7 +19,11 @@ def define_inputs(inputs: dict):
         'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
     inputs['selected_case'] = 'normal'
-
+    #separate co2ts assumption for the heatmap
+    inputs['co2ts-LCO-hm'] = CO2TS_LCO_DEFAULT
+    #access what button was pressed by the user
+    inputs['trigger_id'] = None
+    #pre compute basic hm data
     inputs['full_hm_df'] = get_heatmap_data()
 
 

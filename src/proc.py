@@ -34,7 +34,8 @@ def process_inputs(inputs: dict, outputs: dict):
     selected_case = inputs["selected_case"]
 
     # filter the full hm df. If the co2 transport and storage cost has been changed, the heat map data is updated
-    if inputs["params"]["co2ts_LCO"] != previous_inputs["co2ts_LCO"] or inputs["params"]["co2ts_LCO"] != load.CO2TS_LCO_DEFAULT:
+    # only valid if the hm button has been pressed
+    if inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['co2ts-LCO-hm'] != previous_inputs or inputs['co2ts-LCO-hm'] != load.CO2TS_LCO_DEFAULT:
         new_hm_df = recalc_hm_df(inputs)
         df_final = new_hm_df
     else:
@@ -53,7 +54,7 @@ def process_inputs(inputs: dict, outputs: dict):
     outputs['optioninfo_df'] = optioninfo_df
 
     #save inputs
-    previous_inputs = inputs["params"].copy()
+    previous_inputs = inputs['co2ts-LCO-hm']
 
 
 def recalc_hm_df(inputs:dict):
@@ -65,7 +66,7 @@ def recalc_hm_df(inputs:dict):
     Returns;
         full_hm_df: df containing the updated data for the heatmap
     """
-    new_co2ts_LCO = inputs["params"]["co2ts_LCO"]
+    new_co2ts_LCO = inputs['co2ts-LCO-hm']
     selected_case = inputs["selected_case"]
 
     param_dict = {

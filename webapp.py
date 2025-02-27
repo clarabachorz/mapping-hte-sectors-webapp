@@ -5,7 +5,7 @@ from dash.dependencies import Input, State
 from piw import Webapp
 from dash import html
 
-from src.ctrls import main_ctrl, input_fields
+from src.ctrls import main_ctrl, input_fields , hm_ctrl
 from src.load import define_inputs
 from src.plots.StackedBarPlot import StackedBarPlot
 from src.plots.FuelStackedBarPlot import FuelStackedBarPlot
@@ -76,14 +76,16 @@ webapp = Webapp(
         'advanced': 'Mitigation landscapes (Heat maps)',
     },
     load=[define_inputs],
-    ctrls=[main_ctrl],
+    ctrls=[main_ctrl, hm_ctrl],
     generate_args=[
         Input('simple-update', 'n_clicks'),
+        Input('heatmap-update', 'n_clicks'),
     ] + [
         State(f"simple-{input_field_id}", 'value')
         for input_field_id in input_fields
     ] +[
         State('dropdown-case', 'value'),
+        State('co2ts-LCO-hm', 'value'),
     ],
     update=[update_inputs],
     proc=[process_inputs],

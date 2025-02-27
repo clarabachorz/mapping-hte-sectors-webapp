@@ -49,6 +49,21 @@ def main_ctrl(default_inputs: dict):
             ),
             html.Div(
                 children=[
+                    html.Button(id='simple-update', n_clicks=0, children='GENERATE', className='btn btn-primary'),
+                ],
+                className='card-element',
+            ),
+        ],
+        className='side-card',
+    )]
+
+
+def hm_ctrl(default_inputs: dict):
+    return [html.Div(
+        id='heatmap-controls-card',
+        children=[
+            html.Div(
+                children=[
                     html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
                     dcc.Dropdown(
                         id="dropdown-case",
@@ -59,11 +74,25 @@ def main_ctrl(default_inputs: dict):
                 ],
                 className='card-element',
             ),
+            #co2 transport and storage cost
+            html.Div(
+                children = [
+                        html.Label('CO₂ transport and storage cost (EUR/t) (heatmap page only)',
+                            htmlFor=f"co2ts-LCO-hm",
+                        ),
+                        dcc.Input(
+                            id=f"co2ts-LCO-hm",
+                            type='number',
+                            placeholder='Number',
+                            value=default_inputs.get('co2ts-LCO-hm', 15)
+                    ),
+                ],
+                className='card-element',
+            ),
 
-            # Generate Button
             html.Div(
                 children=[
-                    html.Button(id='simple-update', n_clicks=0, children='GENERATE', className='btn btn-primary'),
+                    html.Button(id='heatmap-update', n_clicks=0, children='GENERATE', className='btn btn-primary'),
                 ],
                 className='card-element',
             ),
