@@ -1,4 +1,4 @@
-from dash import dcc, html
+from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
 
@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 input_fields = {
     'h2-LCO': 'Low-emission hydrogen cost (EUR/MWh)',
     'co2-LCO': 'Non-fossil CO₂ cost (EUR/t)',
-    'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
+    #'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
 }
 
 #define drop down options
@@ -23,6 +23,9 @@ dropdown_options_case = [
     {'label': 'CCU coupling', 'value': 'ccu'},
     {'label': 'Full climate neutrality', 'value': 'comp'},
 ]
+
+steel_capex_types = ["BF-BOF", "CCS for a BF-BOF", "DRI-EAF"]
+steel_capex_units = ["€/t", "€/t", "€/t"]
 
 #create dropdown
 def main_ctrl(default_inputs: dict):
@@ -59,25 +62,22 @@ def main_ctrl(default_inputs: dict):
 
 
 def hm_ctrl(default_inputs: dict):
+    #capex values
+    steel_capex_values = default_inputs.get("steel_capex", [684, 196, 556])
+    #data table
+    steel_capex_table_data = [
+        {"steel_capex_type": steel_capex_types[i], "steel_capex_value": steel_capex_values[i], "steel_capex_unit": steel_capex_units[i]}
+        for i in range(len(steel_capex_types))
+    ]
+    print(steel_capex_table_data)
+
     return [html.Div(
         id='heatmap-controls-card',
         children=[
-            html.Div(
-                children=[
-                    html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
-                    dcc.Dropdown(
-                        id="dropdown-case",
-                        options=dropdown_options_case,
-                        placeholder="Choose an option",
-                        value=default_inputs.get('selected_case', 'normal')
-                    ),
-                ],
-                className='card-element',
-            ),
             #co2 transport and storage cost
             html.Div(
                 children = [
-                        html.Label('CO₂ transport and storage cost (EUR/t) (heatmap page only)',
+                        html.Label('CO₂ transport and storage cost (EUR/t)',
                             htmlFor=f"co2ts-LCO-hm",
                         ),
                         dcc.Input(
@@ -90,6 +90,55 @@ def hm_ctrl(default_inputs: dict):
                 className='card-element',
             ),
 
+            html.Div(
+                children=[
+                    html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
+                    dcc.Dropdown(
+                        id="dropdown-case",
+                        options=dropdown_options_case,
+                        placeholder="Choose an option",
+                        value=default_inputs.get('selected_case', 'normal')
+                    ),
+                ],
+                className='card-element',
+            ),
+
+            #ccu attribution
+            html.Div(
+                children = [
+                        html.Label('CCU attribution (to the user sector) (heatmap page only)',
+                            htmlFor=f"ccu-attr-hm",
+                        ),
+                        dcc.Input(
+                            id=f"ccu-attr-hm",
+                            type='number',
+                            placeholder='Number',
+                            value=default_inputs.get('ccu_attribution', 0.5),
+                            min = 0,
+                            max = 1,
+                            step = 0.01
+                    ),
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                children=[
+                    html.Label("Steel CAPEX Table (before annualization)"),
+                    dash_table.DataTable(
+                        id="steel-capex-table",
+                        columns=[
+                            {"name": "Technology", "id": "steel_capex_type", "editable": False},
+                            {"name": "CAPEX Value", "id": "steel_capex_value", "type": "numeric", "editable": True},
+                            {"name": "Unit", "id": "steel_capex_unit", "editable": False},
+                        ],
+                        data=steel_capex_table_data,
+                        editable=True,
+                        style_table={"width": "100%"},
+                        style_cell={"textAlign": "left"},
+                    ),
+                ],
+                className='card-element',
+            ),
             html.Div(
                 children=[
                     html.Button(id='heatmap-update', n_clicks=0, children='GENERATE', className='btn btn-primary'),

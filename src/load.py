@@ -11,18 +11,23 @@ import time
 H2_LCO_DEFAULT = 70.0
 CO2_LCO_DEFAULT = 300.0
 CO2TS_LCO_DEFAULT = 15.0
+CCU_ATTR_DEFAULT = 0.5
+STEEL_CAPEX_DEFAULT = [684, 196, 556]
 
 def define_inputs(inputs: dict):
     inputs['params'] = {
         'h2_LCO': H2_LCO_DEFAULT,
         'co2_LCO': CO2_LCO_DEFAULT,
-        'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
     inputs['selected_case'] = 'normal'
     #separate co2ts assumption for the heatmap
     inputs['co2ts-LCO-hm'] = CO2TS_LCO_DEFAULT
     #access what button was pressed by the user
     inputs['trigger_id'] = None
+    inputs['ccu_attribution'] = CCU_ATTR_DEFAULT
+    #steel capex data. BF-BOF, CCS and DRI-EAF
+    # in EUR/t before annualization
+    inputs['steel_capex'] = STEEL_CAPEX_DEFAULT
     #pre compute basic hm data
     inputs['full_hm_df'] = get_heatmap_data()
 

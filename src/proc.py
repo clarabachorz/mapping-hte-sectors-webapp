@@ -35,11 +35,21 @@ def process_inputs(inputs: dict, outputs: dict):
 
     # filter the full hm df. If the co2 transport and storage cost has been changed, the heat map data is updated
     # only valid if the hm button has been pressed
-    if inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['co2ts-LCO-hm'] != previous_inputs or inputs['co2ts-LCO-hm'] != load.CO2TS_LCO_DEFAULT:
+    #the if loop also catches the case where both co2ts and ccu have been changed
+    if inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['co2ts-LCO-hm'] != previous_inputs['co2ts_LCO'] or inputs['co2ts-LCO-hm'] != load.CO2TS_LCO_DEFAULT:
+        new_hm_df = recalc_hm_df(inputs)
+        df_final = new_hm_df
+    #also check case where only ccu attribution has been changed, and not co2ts
+    elif inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['ccu_attribution'] != previous_inputs['ccu_attribution'] or inputs['ccu_attribution'] != load.CCU_ATTR_DEFAULT:
+        new_hm_df = recalc_hm_df(inputs)
+        df_final = new_hm_df
+    elif inputs['trigger_id'] == "heatmap-update.n_clicks" and set(inputs['steel_capex']) != set(previous_inputs['steel_capex']) or inputs['steel_capex'] != load.STEEL_CAPEX_DEFAULT:
         new_hm_df = recalc_hm_df(inputs)
         df_final = new_hm_df
     else:
         df_final = full_hm_df[full_hm_df["scenario"] == selected_case]
+
+   
 
     #take the 4 different dfs needed
     heatmap_df = df_final.pivot(index=["sector", "h2_LCO"], columns="co2_LCO", values="type_ID")
@@ -54,7 +64,10 @@ def process_inputs(inputs: dict, outputs: dict):
     outputs['optioninfo_df'] = optioninfo_df
 
     #save inputs
-    previous_inputs = inputs['co2ts-LCO-hm']
+    previous_inputs['co2ts_LCO'] = inputs['co2ts-LCO-hm']
+    previous_inputs['ccu_attribution'] = inputs['ccu_attribution']
+    previous_inputs['steel_capex'] = inputs['steel_capex']
+
 
 
 def recalc_hm_df(inputs:dict):
@@ -66,13 +79,26 @@ def recalc_hm_df(inputs:dict):
     Returns;
         full_hm_df: df containing the updated data for the heatmap
     """
-    new_co2ts_LCO = inputs['co2ts-LCO-hm']
+    #params are not necessarily updated. if/elif loop catches the correct cases.
+    selected_co2ts_LCO = inputs['co2ts-LCO-hm']
+    selected_ccu_attr = inputs['ccu_attribution']
     selected_case = inputs["selected_case"]
+
+    #capex
+    bf_bof_capex = inputs['steel_capex'][0]
+    ccs_capex = inputs['steel_capex'][1]
+    dri_eaf_capex = inputs['steel_capex'][2]
 
     param_dict = {
         "h2_LCO": np.arange(0, 245, 5),  # used to be 2
         "co2_LCO": np.arange(0, 1250, 50),  # used to be 25
-        "co2ts_LCO": [new_co2ts_LCO],    
+        "co2ts_LCO": [selected_co2ts_LCO],
+        "co2ccu_co2em": [selected_ccu_attr],
+        "fossil_steel_capex": [bf_bof_capex],
+        "comp_steel_capex": [bf_bof_capex],
+        "ccs_steel_capex": [bf_bof_capex + ccs_capex],
+        "ccu_steel_capex": [bf_bof_capex + ccs_capex],
+        "h2_steel_capex": [dri_eaf_capex],
     }
 
     params = itertools.product(*param_dict.values())

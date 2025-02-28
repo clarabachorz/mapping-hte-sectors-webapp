@@ -86,6 +86,8 @@ webapp = Webapp(
     ] +[
         State('dropdown-case', 'value'),
         State('co2ts-LCO-hm', 'value'),
+        State('ccu-attr-hm', 'value'),
+        State("steel-capex-table", "data")
     ],
     update=[update_inputs],
     proc=[process_inputs],

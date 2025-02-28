@@ -28,7 +28,7 @@ cost_types:
     label: Annualised CAPEX
     colour: '#bde0fe'
   opex:
-    label: OPEX(fixed)
+    label: OPEX (fixed)
     colour: '#bde0fe'
   other costs:
     label: Other CAPEX or OPEX
@@ -73,13 +73,13 @@ cost_types:
     label: Green NH<sub>3</sub>
     colour: '#FCE762'
   lh2:
-    label: Liquified green H<sub>2</sub>
+    label: Liquified<br>green H<sub>2</sub>
     colour: '#FCE762'
   co2 tax:
     label: CO<sub>2</sub> tax
     colour: '#aaaaaa'
   co2:
-    label: CO<sub>2</sub> (non-fossil)
+    label: CO<sub>2</sub><br>(non-fossil)
     colour: '#23CE6B'
   co2ccu:
     label: CO<sub>2</sub> (from a<br> fossil industrial point source)
@@ -88,13 +88,13 @@ cost_types:
     label: Syn-methanol
     colour: '#FEB380'
   ch3ohccu:
-    label: Syn-methanol (using fossil CO<sub>2</sub> from CCU)
+    label: Syn-methanol<br>(using fossil CO<sub>2</sub> from CCU)
     colour: '#8E9AAF'
   MtJ:
-    label: Syn-jet fuel (methanol route)
+    label: Syn-jet fuel<br>(methanol route)
     colour: '#FEB380'
   MtJccu:
-    label: Syn-jet fuel (methanol route, using fossil CO<sub>2</sub> from CCU)
+    label: Syn-jet fuel<br>(methanol route,<br>using fossil CO<sub>2</sub> from CCU)
     colour: '#8E9AAF'
   co2 transport and storage:
     label: CO<sub>2</sub> transport and storage
