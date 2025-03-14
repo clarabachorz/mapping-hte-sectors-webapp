@@ -150,7 +150,24 @@ def get_basic_LCOPs(inputs:dict):
         full_df: Df containing cost, emissions and abatement costs for each mitigation option for each HTE sector
         LCO_breakdown: Df containing the LCO breakdown for each mitigation option for each HTE sector
     """
-    full_df, LCO_breakdown = calc_all_LCO_wbreakdown(**inputs['params'])
+    #steel capex
+    bf_bof_capex = inputs['steel_capex'][0]
+    ccs_capex = inputs['steel_capex'][1]
+    dri_eaf_capex = inputs['steel_capex'][2]
+
+    params_dict = {
+        'h2_LCO': inputs['params']['h2_LCO'],
+        'co2_LCO': inputs['params']['co2_LCO'],
+        'co2ts_LCO': inputs['params']['co2ts_LCO'],
+        'co2ccu_co2em': inputs['ccu_attribution'],
+        "fossil_steel_capex": bf_bof_capex,
+        "comp_steel_capex": bf_bof_capex,
+        "ccs_steel_capex": bf_bof_capex + ccs_capex,
+        "ccu_steel_capex": bf_bof_capex + ccs_capex,
+        "h2_steel_capex": dri_eaf_capex,
+    }
+    #full_df, LCO_breakdown = calc_all_LCO_wbreakdown(**inputs['params'])
+    full_df, LCO_breakdown = calc_all_LCO_wbreakdown(**params_dict)
 
     # split tech name into type (ccs, ccu, ..) and actual sector
     full_df[["type", "sector"]] = full_df["tech"].str.split("_", expand=True)

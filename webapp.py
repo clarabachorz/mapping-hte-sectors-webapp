@@ -84,8 +84,8 @@ webapp = Webapp(
         State(f"simple-{input_field_id}", 'value')
         for input_field_id in input_fields
     ] +[
-        State('dropdown-case', 'value'),
         State('co2ts-LCO-hm', 'value'),
+        State('dropdown-case', 'value'),
         State('ccu-attr-hm', 'value'),
         State("steel-capex-table", "data")
     ],

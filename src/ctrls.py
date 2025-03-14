@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 input_fields = {
     'h2-LCO': 'Low-emission hydrogen cost (EUR/MWh)',
     'co2-LCO': 'Non-fossil CO₂ cost (EUR/t)',
-    #'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
+    'co2ts-LCO': 'CO₂ transport and storage cost (EUR/t)',
 }
 
 #define drop down options
@@ -69,7 +69,6 @@ def hm_ctrl(default_inputs: dict):
         {"steel_capex_type": steel_capex_types[i], "steel_capex_value": steel_capex_values[i], "steel_capex_unit": steel_capex_units[i]}
         for i in range(len(steel_capex_types))
     ]
-    print(steel_capex_table_data)
 
     return [html.Div(
         id='heatmap-controls-card',

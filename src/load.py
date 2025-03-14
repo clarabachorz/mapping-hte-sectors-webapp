@@ -18,6 +18,7 @@ def define_inputs(inputs: dict):
     inputs['params'] = {
         'h2_LCO': H2_LCO_DEFAULT,
         'co2_LCO': CO2_LCO_DEFAULT,
+        'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
     inputs['selected_case'] = 'normal'
     #separate co2ts assumption for the heatmap
