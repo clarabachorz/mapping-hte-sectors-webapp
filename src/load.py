@@ -20,6 +20,8 @@ def define_inputs(inputs: dict):
         'co2_LCO': CO2_LCO_DEFAULT,
         'co2ts_LCO': CO2TS_LCO_DEFAULT,
     }
+    inputs['ccu_attribution_simple'] = CCU_ATTR_DEFAULT
+    inputs['steel_capex_simple'] = STEEL_CAPEX_DEFAULT
     inputs['selected_case'] = 'normal'
     #separate co2ts assumption for the heatmap
     inputs['co2ts-LCO-hm'] = CO2TS_LCO_DEFAULT

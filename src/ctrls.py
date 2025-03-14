@@ -29,6 +29,15 @@ steel_capex_units = ["€/t", "€/t", "€/t"]
 
 #create dropdown
 def main_ctrl(default_inputs: dict):
+
+    #capex values
+    steel_capex_values = default_inputs.get("steel_capex_simple", [684, 196, 556])
+    #data table
+    simple_steel_capex_table_data = [
+        {"steel_capex_type": steel_capex_types[i], "steel_capex_value": steel_capex_values[i], "steel_capex_unit": steel_capex_units[i]}
+        for i in range(len(steel_capex_types))
+    ]
+    
     return [html.Div(
         id='simple-controls-card',
         children=[
@@ -47,6 +56,41 @@ def main_ctrl(default_inputs: dict):
                             value=default_inputs['params'][input_field_id.removeprefix('simple-').replace('-', '_')]
                         ),
                     )
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                children = [
+                        html.Label('CCU attribution (to the user sector)',
+                            htmlFor=f"simple-ccu-attr",
+                        ),
+                        dcc.Input(
+                            id=f"simple-ccu-attr",
+                            type='number',
+                            placeholder='Number',
+                            value=default_inputs.get('ccu_attribution', 0.5),
+                            min = 0,
+                            max = 1,
+                            step = 0.01
+                    ),
+                ],
+                className='card-element',
+            ),
+            html.Div(
+                children=[
+                    html.Label("Steel CAPEX Table (before annualization)"),
+                    dash_table.DataTable(
+                        id="simple-steel-capex-table",
+                        columns=[
+                            {"name": "Technology", "id": "steel_capex_type", "editable": False},
+                            {"name": "CAPEX Value", "id": "steel_capex_value", "type": "numeric", "editable": True},
+                            {"name": "Unit", "id": "steel_capex_unit", "editable": False},
+                        ],
+                        data=simple_steel_capex_table_data,
+                        editable=True,
+                        style_table={"width": "100%"},
+                        style_cell={"textAlign": "left"},
+                    ),
                 ],
                 className='card-element',
             ),
@@ -91,7 +135,7 @@ def hm_ctrl(default_inputs: dict):
 
             html.Div(
                 children=[
-                    html.Label("Select case to plot (Heatmap page only)", htmlFor="dropdown-case"),
+                    html.Label("Select case to plot", htmlFor="dropdown-case"),
                     dcc.Dropdown(
                         id="dropdown-case",
                         options=dropdown_options_case,
@@ -105,7 +149,7 @@ def hm_ctrl(default_inputs: dict):
             #ccu attribution
             html.Div(
                 children = [
-                        html.Label('CCU attribution (to the user sector) (heatmap page only)',
+                        html.Label('CCU attribution',
                             htmlFor=f"ccu-attr-hm",
                         ),
                         dcc.Input(

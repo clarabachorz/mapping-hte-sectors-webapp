@@ -11,7 +11,7 @@ class StackedBarPlot(BasePlot):
     figs, cfg = load_yaml_plot_config_file('StackedBarPlot')
     _add_subfig_name = True
 
-    sectors = ["ship", "steel", "plane", "chem", "cement"]
+    sectors = [ "chem", "plane","ship", "steel", "cement"]
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
         tech_displayname = pd.Series(outputs['full_df']["code"].values, index = outputs['full_df']["tech"]).to_dict()
@@ -44,7 +44,8 @@ class StackedBarPlot(BasePlot):
             xanchor="center",
             x=0.5,
             orientation="h"  # makes the legend horizontal
-        )
+        ),
+        margin=dict(l=0, r=0, t=50, b=250),
         )
 
         return {'fig2': fig}
@@ -53,7 +54,8 @@ class StackedBarPlot(BasePlot):
 
         #filter to get the correct sector, and put df in long format
         df_plot = df[df["sector"]==sector]
-        df_plot = df_plot.drop(columns=['LCO', 'type', 'sector']).melt(id_vars='tech').fillna(0.0)
+        df_plot = df_plot.drop(columns=['LCO', 'type', 'sector']).melt(id_vars='tech')
+        df_plot = df_plot.fillna(0.0)
 
 
         if self._target == 'webapp':

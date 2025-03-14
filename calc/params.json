@@ -397,7 +397,7 @@
             "ch3ohdemand": 16.41,
             "recycledco2": 0.314,
             "unit": "EUR/t",
-            "desc": "Syn-methanol to olefin (non-fossil CO2)"
+            "desc": "Syn-methanol to olefin<br>(non-fossil CO2)"
         },
         {
             "key": "ccu_chem",

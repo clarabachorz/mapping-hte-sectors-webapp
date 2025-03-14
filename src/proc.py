@@ -33,22 +33,24 @@ def process_inputs(inputs: dict, outputs: dict):
     full_hm_df = inputs['full_hm_df']
     selected_case = inputs["selected_case"]
 
-    # filter the full hm df. If the co2 transport and storage cost has been changed, the heat map data is updated
-    # only valid if the hm button has been pressed
-    #the if loop also catches the case where both co2ts and ccu have been changed
-    if inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['co2ts-LCO-hm'] != previous_inputs['co2ts_LCO'] or inputs['co2ts-LCO-hm'] != load.CO2TS_LCO_DEFAULT:
-        new_hm_df = recalc_hm_df(inputs)
-        df_final = new_hm_df
-    #also check case where only ccu attribution has been changed, and not co2ts
-    elif inputs['trigger_id'] == "heatmap-update.n_clicks" and inputs['ccu_attribution'] != previous_inputs['ccu_attribution'] or inputs['ccu_attribution'] != load.CCU_ATTR_DEFAULT:
-        new_hm_df = recalc_hm_df(inputs)
-        df_final = new_hm_df
-    elif inputs['trigger_id'] == "heatmap-update.n_clicks" and set(inputs['steel_capex']) != set(previous_inputs['steel_capex']) or inputs['steel_capex'] != load.STEEL_CAPEX_DEFAULT:
-        new_hm_df = recalc_hm_df(inputs)
-        df_final = new_hm_df
-    else:
+    # filter the full hm df. 
+    # If the co2 transport and storage cost, steel capex, or ccu attribution have been changed, the heat map data is updated
+    # only valid if the hm update button has been pressed
+    if inputs['trigger_id'] != "heatmap-update.n_clicks":
         df_final = full_hm_df[full_hm_df["scenario"] == selected_case]
-
+    else:
+        if inputs['co2ts-LCO-hm'] != previous_inputs['co2ts_LCO'] or inputs['co2ts-LCO-hm'] != load.CO2TS_LCO_DEFAULT:
+            new_hm_df = recalc_hm_df(inputs)
+            df_final = new_hm_df
+        #also check case where only ccu attribution has been changed, and not co2ts
+        elif inputs['ccu_attribution'] != previous_inputs['ccu_attribution'] or inputs['ccu_attribution'] != load.CCU_ATTR_DEFAULT:
+            new_hm_df = recalc_hm_df(inputs)
+            df_final = new_hm_df
+        elif set(inputs['steel_capex']) != set(previous_inputs['steel_capex']) or inputs['steel_capex'] != load.STEEL_CAPEX_DEFAULT:
+            new_hm_df = recalc_hm_df(inputs)
+            df_final = new_hm_df
+        else:
+            df_final = full_hm_df[full_hm_df["scenario"] == selected_case]
    
 
     #take the 4 different dfs needed
@@ -151,15 +153,15 @@ def get_basic_LCOPs(inputs:dict):
         LCO_breakdown: Df containing the LCO breakdown for each mitigation option for each HTE sector
     """
     #steel capex
-    bf_bof_capex = inputs['steel_capex'][0]
-    ccs_capex = inputs['steel_capex'][1]
-    dri_eaf_capex = inputs['steel_capex'][2]
+    bf_bof_capex = inputs['steel_capex_simple'][0]
+    ccs_capex = inputs['steel_capex_simple'][1]
+    dri_eaf_capex = inputs['steel_capex_simple'][2]
 
     params_dict = {
         'h2_LCO': inputs['params']['h2_LCO'],
         'co2_LCO': inputs['params']['co2_LCO'],
         'co2ts_LCO': inputs['params']['co2ts_LCO'],
-        'co2ccu_co2em': inputs['ccu_attribution'],
+        'co2ccu_co2em': inputs['ccu_attribution_simple'],
         "fossil_steel_capex": bf_bof_capex,
         "comp_steel_capex": bf_bof_capex,
         "ccs_steel_capex": bf_bof_capex + ccs_capex,
@@ -172,8 +174,8 @@ def get_basic_LCOPs(inputs:dict):
     # split tech name into type (ccs, ccu, ..) and actual sector
     full_df[["type", "sector"]] = full_df["tech"].str.split("_", expand=True)
 
-    # convert costs for the aviation sector from EUR to cEUR:
-    full_df.loc[full_df['sector'] == 'plane', 'cost'] = full_df.loc[full_df['sector'] == 'plane', 'cost'] * 100
+    # # convert costs for the aviation sector from EUR to cEUR:
+    # full_df.loc[full_df['sector'] == 'plane', 'cost'] = full_df.loc[full_df['sector'] == 'plane', 'cost'] * 100
     # And for the LCO breakdown
     numeric_cols = LCO_breakdown.select_dtypes(include=[np.number]).columns.tolist()
     numeric_cols.remove('tech') if 'tech' in numeric_cols else None

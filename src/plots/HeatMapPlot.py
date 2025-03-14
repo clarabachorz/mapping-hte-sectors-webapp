@@ -10,10 +10,6 @@ import numpy as np
 
 class HeatMapPlot(BasePlot):
     figs, cfg = load_yaml_plot_config_file('HeatMapPlot')
-    # for now, only one figure so subplots are not needed
-    #_add_subfig_name = True
-
-    #def _decorate(...) if required, see Philipps repo
 
     def plot(self, inputs: dict, outputs: dict, subfig_names: list) -> dict:
 
@@ -114,7 +110,7 @@ class HeatMapPlot(BasePlot):
         )
         )
 
-        return {'fig3': fig}
+        return {'fig4': fig}
 
     def _make_cmap(self):
         """Required to make a custom and DISCRETE colormap
@@ -122,7 +118,7 @@ class HeatMapPlot(BasePlot):
         Returns:
             list: list of colors and their associated values
         """
-        color_dict_tech = { "h2": "#FCE762",  "efuel": "#FF9446", "comp":"#4C7D5B", "ccu":"#A5A9AF", "ccs":"#3083DC"}
+        color_dict_tech = {"h2": "#FCE762",  "efuel": "#FF9446", "comp":"#4C7D5B", "ccu":"#A5A9AF", "ccs":"#3083DC"}
         z_bins = [0, 0.25, 0.5, 0.75, 1]
         colors = [color_dict_tech["h2"], color_dict_tech["efuel"], color_dict_tech["comp"], color_dict_tech["ccu"], color_dict_tech["ccs"]]
 

@@ -9,6 +9,7 @@ from src.ctrls import main_ctrl, input_fields , hm_ctrl
 from src.load import define_inputs
 from src.plots.StackedBarPlot import StackedBarPlot
 from src.plots.FuelStackedBarPlot import FuelStackedBarPlot
+from src.plots.AbatementCostPlot import AbatementCostPlot
 from src.plots.HeatMapPlot import HeatMapPlot
 from src.proc import process_inputs
 from src.update import update_inputs
@@ -84,6 +85,8 @@ webapp = Webapp(
         State(f"simple-{input_field_id}", 'value')
         for input_field_id in input_fields
     ] +[
+        State("simple-ccu-attr", 'value'),
+        State("simple-steel-capex-table", "data"),
         State('co2ts-LCO-hm', 'value'),
         State('dropdown-case', 'value'),
         State('ccu-attr-hm', 'value'),
@@ -91,7 +94,7 @@ webapp = Webapp(
     ],
     update=[update_inputs],
     proc=[process_inputs],
-    plots=[FuelStackedBarPlot, StackedBarPlot, HeatMapPlot],
+    plots=[FuelStackedBarPlot, StackedBarPlot, AbatementCostPlot,HeatMapPlot],
     glob_cfg=load_yaml_config_file('global'),
     output=Path(__file__).parent / 'print',
     debug=False,

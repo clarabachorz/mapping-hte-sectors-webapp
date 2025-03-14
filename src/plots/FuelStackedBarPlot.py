@@ -59,7 +59,9 @@ class FuelStackedBarPlot(BasePlot):
     def _prepare(self, df: pd.DataFrame) -> pd.DataFrame:
 
         #filter to get the correct columns, and put df in long format
-        df_plot = df.drop(columns=['LCO']).melt(id_vars='tech').fillna(0.0)
+        df_plot = df.drop(columns=['LCO']).melt(id_vars='tech')
+        with pd.option_context("future.no_silent_downcasting", True):
+            df_plot = df_plot.fillna(0.0).infer_objects(copy=False)
         
         #here, function that separates variables
         df_plot = self._split_variable_column(df_plot)
@@ -119,13 +121,13 @@ class FuelStackedBarPlot(BasePlot):
 
         # Define your custom legend labels
         legend_labels = {
-            'ch3ohccu': 'Fossil CCU-based methanol',
+            'ch3ohccu': 'Fossil CCU-based<br>methanol',
             'ch3oh': 'Syn-methanol',
             'co2': 'Non-fossil CO<sub>2</sub>',
             'h2': 'Low-emission H<sub>2</sub>',
             #'heat': 'Heat',
             'elec': 'Electricity',
-            'other costs': 'CAPEX and fixed OPEX',
+            'other costs': 'CAPEX and fixed<br>OPEX',
             'capex': 'CAPEX',
             'opex': 'Fixed OPEX',
             'cost': 'Fossil fuel cost',
@@ -143,6 +145,7 @@ class FuelStackedBarPlot(BasePlot):
                     y=df_variable['value'], 
                     marker_color=df_variable['display_color'],
                     name=legend_labels.get(variable, variable),
+                    legendgroup=df_variable['display_color'].iloc[0],
                     hoverinfo='text' if hover else 'skip',
                     hovertemplate=hovertemplate,
                     customdata=df_variable[hovercols] if hover else None,
