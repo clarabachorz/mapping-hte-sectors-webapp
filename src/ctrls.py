@@ -39,7 +39,7 @@ def main_ctrl(default_inputs: dict):
     ]
     
     return [html.Div(
-        id='simple-controls-card',
+        id='card-ctrl-simple',
         children=[
             html.Div([
                     item
@@ -115,7 +115,7 @@ def hm_ctrl(default_inputs: dict):
     ]
 
     return [html.Div(
-        id='heatmap-controls-card',
+        id='card-ctrl-heatmap',
         children=[
             #co2 transport and storage cost
             html.Div(
