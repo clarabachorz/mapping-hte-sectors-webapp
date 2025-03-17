@@ -117,6 +117,11 @@ def hm_ctrl(default_inputs: dict):
     return [html.Div(
         id='card-ctrl-heatmap',
         children=[
+            html.P(
+                "This card allows you to control various parameters for the mitigation landscapes."+
+                " Loading the landscapes after changing parameters below takes up to 45 seconds.",
+                className='explanation'
+            ),
             #co2 transport and storage cost
             html.Div(
                 children = [
