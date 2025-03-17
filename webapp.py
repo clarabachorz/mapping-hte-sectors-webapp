@@ -78,6 +78,10 @@ webapp = Webapp(
     },
     load=[define_inputs],
     ctrls=[main_ctrl, hm_ctrl],
+    ctrls_display={
+        'simple': [''],
+        'heatmap': ['advanced'],
+    },
     generate_args=[
         Input('simple-update', 'n_clicks'),
         Input('heatmap-update', 'n_clicks'),
