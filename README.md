@@ -1,6 +1,6 @@
 # Software for the interactive webapp on "Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors".
 ## Overview
-This interactive webapp is offered as a complement to [the research software](https://github.com/clarabachorz/mapping-hte-sectors) used to obtain results for the article **Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors** (link and DOI TBC). It can be used to visualize the details of the levelized cost components interactively.
+This interactive webapp is offered as a complement to [the research software](https://github.com/clarabachorz/mapping-hte-sectors) used to obtain results for the article **Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors** (DOI: https://doi.org/10.1038/s41467-025-59277-1). It can be used to visualize the details of the levelized cost components interactively.
 
 
 ## How to cite this work

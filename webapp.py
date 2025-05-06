@@ -56,14 +56,14 @@ metadata = {
             'affiliation': ['Potsdam Institute for Climate Impact Research, Potsdam, Germany'],
         },
     ],
-    'date': '2023-01-09',
-    'version': 'v0.1.0',
-    'doi': 'TBD',
+    'date': '2025-03-13',
+    'version': 'v1.0.0',
+    'doi': 'https://doi.org/10.1038/s41467-025-59277-1',
     'licence': {'name': 'CC BY 4.0', 'link': 'https://creativecommons.org/licenses/by/4.0/'},
-    'citeas': 'Bachorz, Clara; Verpoort, Philipp C.; Ueckerdt, Falko (2023): Interactive webapp for exploring techno-economic landscapes of abatement options for hard-to-electrify sectors. V. 0.1.0. GFZ Data Services. '
-              'https://doi.org/TBD',
-    'reference_citeas': 'Bachorz et al., Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors'
-                        '(2024). Working paper in preparation.',
+    'citeas': 'Bachorz, Clara; Verpoort, Philipp C.; Luderer, Gunnar; Ueckerdt, Falko (2025): Interactive webapp for exploring techno-economic landscapes of abatement options for hard-to-electrify sectors. V. 1.0.0. GFZ Data Services. '
+              'https://doi.org/10.5880/pik.2025.001',
+    'reference_citeas': 'Bachorz et al., Exploring techno-economic landscapes of abatement options for hard-to-electrify sectors.'
+                        ' Nat Commun 16, 3984 (2025). https://doi.org/10.1038/s41467-025-59277-1',
     #'reference_doi': 'TBC',
 }
 
